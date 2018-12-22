@@ -1,0 +1,9 @@
+version: '3'
+services:
+  linter:
+    image: drupsys/php-linter
+    container_name: servicer-linter
+    volumes:
+    - ./src:/code/src:cached
+    - ./linter/php_cs.php:/code/.php_cs.dist:cached
+    - ./linter/mvf_ruleset.xml:/code/mvf_ruleset.xml:cached

@@ -1,0 +1,25 @@
+{
+    "name": "0nedark/servicer",
+    "type": "library",
+    "license": "MIT",
+    "description": "",
+    "authors": [
+        {
+            "name": "Dovydas Rupsys",
+            "email": "dovydas.rupsys@outlook.com"
+        }
+    ],
+    "require": {
+        "php": "7.1.*",
+        "symfony/console": "^4.2",
+        "aws/aws-sdk-php": "^3.82"
+    },
+    "autoload": {
+        "psr-4": {
+            "MVF\\Servicer\\": "src/"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.2"
+    }
+}
