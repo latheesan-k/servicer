@@ -37,12 +37,6 @@ class DaemonCommand extends BaseCommand implements ErrorInterface
         $this->setName('daemon');
         $this->setDescription('Run blocking daemon that listens for actions');
         $this->setHelp('Not implemented');
-
-        $this->addArgument(
-            self::QUEUE,
-            InputArgument::REQUIRED,
-            'The queue to be listened'
-        );
     }
 
     /**
