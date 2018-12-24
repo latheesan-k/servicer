@@ -80,7 +80,7 @@ class SqsQueue implements QueueInterface
                         $body = $message['Body'];
                     }
 
-                    $action = $actions->getAction($headers['Action']['StringValue']);
+                    $action = $actions->getAction($headers['Action']);
                     $action->handle($headers, $body);
 
                     $client->deleteMessage(
