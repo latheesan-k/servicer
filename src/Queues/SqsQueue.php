@@ -12,9 +12,8 @@ use Aws\Acm\Exception\AcmException;
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient;
 use MVF\Servicer\ActionsInterface;
+use MVF\Servicer\ErrorInterface;
 use MVF\Servicer\QueueInterface;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class SqsQueue implements QueueInterface
 {
@@ -24,12 +23,19 @@ class SqsQueue implements QueueInterface
         'Number' => 'StringValue',
         'Binary' => 'BinaryValue',
     ];
+    /**
+     * @var string
+     */
+    private $queue;
 
-    private $client;
-
-    public function __construct()
+    public function __construct(string $queue)
     {
-        $this->client = new SqsClient(
+        $this->queue = $queue;
+    }
+
+    function listen(ActionsInterface $actions, ErrorInterface $error): void
+    {
+        $client = new SqsClient(
             [
                 'region'      => getenv('AWS_REGION'),
                 'version'     => getenv('SQS_VERSION'),
@@ -39,14 +45,11 @@ class SqsQueue implements QueueInterface
                 ),
             ]
         );
-    }
 
-    function listen(ActionsInterface $actions, InputInterface $input, OutputInterface $output): void
-    {
         while (true) {
             try {
-                $queue = getenv('SQS_URL') . $input->getArgument(self::QUEUE);
-                $result = $this->client->receiveMessage(
+                $queue = getenv('SQS_URL') . $this->queue;
+                $result = $client->receiveMessage(
                     [
                         'AttributeNames'        => ['SentTimestamp'],
                         'MaxNumberOfMessages'   => 1,
@@ -63,7 +66,6 @@ class SqsQueue implements QueueInterface
 
                 foreach ($messages as $message) {
                     $messageAttributes = $message['MessageAttributes'];
-                    $action = $actions->getAction($messageAttributes['Action']['StringValue']);
 
                     $headers = [];
                     if (empty($messageAttributes) === false) {
@@ -78,16 +80,18 @@ class SqsQueue implements QueueInterface
                         $body = $message['Body'];
                     }
 
+                    $action = $actions->getAction($headers['Action']['StringValue']);
                     $action->handle($headers, $body);
-                    $this->client->deleteMessage(
+
+                    $client->deleteMessage(
                         [
                             'QueueUrl'      => $queue,
                             'ReceiptHandle' => $message['ReceiptHandle'],
                         ]
                     );
                 }
-            } catch (AcmException $e) {
-                $output->writeln($e->getMessage());
+            } catch (AcmException $exception) {
+                $error->handleException($exception);
             }
 
             usleep(10);

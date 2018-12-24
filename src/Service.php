@@ -27,17 +27,13 @@ class Service
      *
      * @param null|QueueInterface $queue Defines the queue driver used by the daemon.
      */
-    public function __construct(?QueueInterface $queue)
+    public function __construct(QueueInterface $queue)
     {
         $this->application = new Application();
 
         $exec = new ExecCommand();
         $this->application->add($exec);
         $this->commands[] = $exec;
-
-        if (empty($queue) === true) {
-            $queue = new SqsQueue();
-        }
 
         $daemon = new DaemonCommand($queue);
         $this->application->add($daemon);

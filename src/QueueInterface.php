@@ -8,11 +8,7 @@
 
 namespace MVF\Servicer;
 
-
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
 interface QueueInterface
 {
-    function listen(ActionsInterface $actions, InputInterface $input, OutputInterface $output): void;
+    function listen(ActionsInterface $actions, ErrorInterface $error): void;
 }

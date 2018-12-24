@@ -59,7 +59,8 @@ class ExecCommand extends BaseCommand
         }
 
         $headers['Action'] = $input->getArgument(self::ACTION);
-        $action = $this->getAction($input->getArgument(self::ACTION));
+        $actions = $this->getActions();
+        $action = $actions->getAction($input->getArgument(self::ACTION));
         $action->handle($headers, $input->getOption(self::BODY));
     }
 }

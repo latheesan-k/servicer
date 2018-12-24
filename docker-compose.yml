@@ -1,5 +1,11 @@
 version: '3'
 services:
+  package:
+    image: drupsys/php-package-alpine
+    container_name: servicer
+    volumes:
+    - .:/app:cached
+
   linter:
     image: drupsys/php-linter
     container_name: servicer-linter

@@ -3,12 +3,14 @@
 namespace MVF\Servicer\Commands;
 
 use MVF\Servicer\BaseCommand;
+use MVF\Servicer\ErrorInterface;
 use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DaemonCommand extends BaseCommand
+class DaemonCommand extends BaseCommand implements ErrorInterface
 {
     const QUEUE = 'queue';
     /**
@@ -51,6 +53,12 @@ class DaemonCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->queue->listen($this->getActions(), $input, $output);
+        $this->queue->listen($this->getActions(), $this);
+    }
+
+    function handleException(\Exception $exception): void
+    {
+        $output = new ConsoleOutput();
+        $output->writeln($exception->getMessage());
     }
 }
