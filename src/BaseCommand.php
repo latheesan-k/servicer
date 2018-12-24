@@ -14,25 +14,22 @@ class BaseCommand extends Command
     private $actions;
 
     /**
-     * BaseCommand constructor.
+     * Set the list of actions.
      *
      * @param ActionsInterface $actions Defines available actions
      */
-    public function __construct(ActionsInterface $actions)
+    public function setActions(ActionsInterface $actions)
     {
-        parent::__construct();
         $this->actions = $actions;
     }
 
     /**
      * Get the specified action from the list of defined actions.
      *
-     * @param null|string $name Name of the action
-     *
-     * @return ActionInterface
+     * @return ActionsInterface
      */
-    protected function getAction(?string $name): ActionInterface
+    protected function getActions(): ActionsInterface
     {
-        return $this->actions->getAction($name);
+        return $this->actions;
     }
 }

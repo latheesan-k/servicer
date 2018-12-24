@@ -2,10 +2,8 @@
 
 namespace MVF\Servicer\Commands;
 
-use Aws\Acm\Exception\AcmException;
-use Aws\Credentials\Credentials;
-use Aws\Sqs\SqsClient;
 use MVF\Servicer\BaseCommand;
+use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,11 +11,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DaemonCommand extends BaseCommand
 {
     const QUEUE = 'queue';
-    const TYPES = [
-        'String' => 'StringValue',
-        'Number' => 'StringValue',
-        'Binary' => 'BinaryValue',
-    ];
+    /**
+     * @var QueueInterface
+     */
+    private $queue;
+
+    /**
+     * DaemonCommand constructor.
+     *
+     * @param QueueInterface $queue
+     */
+    public function __construct(QueueInterface $queue)
+    {
+        $this->queue = $queue;
+        parent::__construct();
+    }
 
     /**
      * Configures the current command.
@@ -43,65 +51,6 @@ class DaemonCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = new SqsClient(
-            [
-                'region'      => getenv('AWS_REGION'),
-                'version'     => getenv('SQS_VERSION'),
-                'credentials' => new Credentials(
-                    getenv('AWS_ACCESS_KEY_ID'),
-                    getenv('AWS_SECRET_ACCESS_KEY')
-                ),
-            ]
-        );
-
-        while (true) {
-            try {
-                $queue = getenv('SQS_URL') . $input->getArgument(self::QUEUE);
-                $result = $client->receiveMessage(
-                    [
-                        'AttributeNames'        => ['SentTimestamp'],
-                        'MaxNumberOfMessages'   => 1,
-                        'MessageAttributeNames' => ['All'],
-                        'QueueUrl'              => $queue,
-                        'WaitTimeSeconds'       => 0,
-                    ]
-                );
-
-                $messages = $result->get('Messages');
-                if (empty($messages) === true) {
-                    continue;
-                }
-
-                foreach ($messages as $message) {
-                    $messageAttributes = $message['MessageAttributes'];
-                    $action = $this->getAction($messageAttributes['Action']['StringValue']);
-
-                    $headers = [];
-                    if (empty($messageAttributes) === false) {
-                        foreach ($messageAttributes as $attribute => $payload) {
-                            $type = $payload['DataType'];
-                            $headers[$attribute] = $payload[self::TYPES[$type]];
-                        }
-                    }
-
-                    $body = '';
-                    if (isset($message['Body']) === true) {
-                        $body = $message['Body'];
-                    }
-
-                    $action->handle($headers, $body);
-                    $client->deleteMessage(
-                        [
-                            'QueueUrl'      => $queue,
-                            'ReceiptHandle' => $message['ReceiptHandle'],
-                        ]
-                    );
-                }
-            } catch (AcmException $e) {
-                $output->writeln($e->getMessage());
-            }
-
-            usleep(10);
-        }
+        $this->queue->listen($this->getActions(), $input, $output);
     }
 }
