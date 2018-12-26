@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: drupsys
  * Date: 24/12/18
- * Time: 00:51
+ * Time: 00:51.
  */
 
 namespace MVF\Servicer\Queues;
@@ -33,7 +33,7 @@ class SqsQueue implements QueueInterface
         $this->queue = $queue;
     }
 
-    function listen(ActionsInterface $actions, ErrorInterface $error): void
+    public function listen(ActionsInterface $actions, ErrorInterface $error): void
     {
         $client = new SqsClient(
             [

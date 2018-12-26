@@ -20,22 +20,26 @@ class KinesisQueue implements QueueInterface
         $this->queue = $queue;
     }
 
-    function listen(ActionsInterface $actions, ErrorInterface $error): void
+    public function listen(ActionsInterface $actions, ErrorInterface $error): void
     {
-        $client = new KinesisClient([
-            'region'      => getenv('AWS_REGION'),
-            'version'     => getenv('SQS_VERSION'),
-            'credentials' => new Credentials(
-                getenv('AWS_ACCESS_KEY_ID'),
-                getenv('AWS_SECRET_ACCESS_KEY')
-            ),
-        ]);
+        $client = new KinesisClient(
+            [
+                'region'      => getenv('AWS_REGION'),
+                'version'     => getenv('SQS_VERSION'),
+                'credentials' => new Credentials(
+                    getenv('AWS_ACCESS_KEY_ID'),
+                    getenv('AWS_SECRET_ACCESS_KEY')
+                ),
+            ]
+        );
 
-        $result = $client->getShardIterator([
-            'StreamName' => 'temp',
-            'ShardId' => 'shardId-000000000000',
-            'ShardIteratorType' => 'LATEST'
-        ]);
+        $result = $client->getShardIterator(
+            [
+                'StreamName'        => 'temp',
+                'ShardId'           => 'shardId-000000000000',
+                'ShardIteratorType' => 'LATEST',
+            ]
+        );
 
         $shardIterator = $result['ShardIterator'];
 

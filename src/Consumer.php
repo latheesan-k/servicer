@@ -4,7 +4,6 @@ namespace MVF\Servicer;
 
 use MVF\Servicer\Commands\DaemonCommand;
 use MVF\Servicer\Commands\ExecCommand;
-use MVF\Servicer\Queues\SqsQueue;
 use Symfony\Component\Console\Application;
 
 class Consumer
@@ -25,7 +24,7 @@ class Consumer
     /**
      * Service constructor.
      *
-     * @param null|QueueInterface $queue Defines the queue driver used by the daemon.
+     * @param null|QueueInterface $queue defines the queue driver used by the daemon
      */
     public function __construct(QueueInterface $queue)
     {

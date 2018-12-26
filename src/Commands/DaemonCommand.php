@@ -5,7 +5,6 @@ namespace MVF\Servicer\Commands;
 use MVF\Servicer\BaseCommand;
 use MVF\Servicer\ErrorInterface;
 use MVF\Servicer\QueueInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,6 +28,12 @@ class DaemonCommand extends BaseCommand implements ErrorInterface
         parent::__construct();
     }
 
+    public function handleException(\Exception $exception): void
+    {
+        $output = new ConsoleOutput();
+        $output->writeln($exception->getMessage());
+    }
+
     /**
      * Configures the current command.
      */
@@ -48,11 +53,5 @@ class DaemonCommand extends BaseCommand implements ErrorInterface
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->queue->listen($this->getActions(), $this);
-    }
-
-    function handleException(\Exception $exception): void
-    {
-        $output = new ConsoleOutput();
-        $output->writeln($exception->getMessage());
     }
 }
