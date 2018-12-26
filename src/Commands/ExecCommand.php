@@ -37,7 +37,7 @@ class ExecCommand extends BaseCommand
             '-B',
             InputOption::VALUE_OPTIONAL,
             'The payload of the action',
-            ''
+            '{}'
         );
     }
 
@@ -49,18 +49,20 @@ class ExecCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $headers = [];
+        $headers = (object)[];
         foreach ($input->getOption(self::HEADERS) as $header) {
             $pattern = '/^(\w*)=(.*)$/';
             if (preg_match($pattern, $header, $matches) !== false) {
                 [$full, $key, $value] = $matches;
-                $headers[$key] = $value;
+                $field = strtolower($key);
+                $headers->$field = $value;
             }
         }
 
-        $headers['Action'] = $input->getArgument(self::ACTION);
+        $headers->action = $input->getArgument(self::ACTION);
         $actions = $this->getActions();
         $action = $actions->getAction($input->getArgument(self::ACTION));
-        $action->handle($headers, $input->getOption(self::BODY));
+        $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
+        $action->handle($headers, $body);
     }
 }
