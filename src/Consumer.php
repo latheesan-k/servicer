@@ -7,7 +7,7 @@ use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\Queues\SqsQueue;
 use Symfony\Component\Console\Application;
 
-class Service
+class Consumer
 {
     /**
      * Defines console application.
