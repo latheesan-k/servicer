@@ -7,8 +7,8 @@ interface ActionInterface
     /**
      * Executes the action.
      *
-     * @param array  $headers Headers of the action
-     * @param string $body    Body of the action
+     * @param \stdClass $headers Headers of the action
+     * @param \stdClass $body Body of the action
      */
-    public function handle(array $headers, string $body): void;
+    public function handle(\stdClass $headers, \stdClass $body): void;
 }

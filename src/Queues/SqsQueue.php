@@ -65,22 +65,22 @@ class SqsQueue implements QueueInterface
                 }
 
                 foreach ($messages as $message) {
+                    $headers = (object)[];
                     $messageAttributes = $message['MessageAttributes'];
-
-                    $headers = [];
                     if (empty($messageAttributes) === false) {
                         foreach ($messageAttributes as $attribute => $payload) {
                             $type = $payload['DataType'];
-                            $headers[$attribute] = $payload[self::TYPES[$type]];
+                            $field = strtolower($attribute);
+                            $headers->$field = $payload[self::TYPES[$type]];
                         }
                     }
 
-                    $body = '';
+                    $body = (object)[];
                     if (isset($message['Body']) === true) {
-                        $body = $message['Body'];
+                        $body = \GuzzleHttp\json_decode($message['Body']);
                     }
 
-                    $action = $actions->getAction($headers['Action']);
+                    $action = $actions->getAction($headers->action);
                     $action->handle($headers, $body);
 
                     $client->deleteMessage(
