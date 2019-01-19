@@ -54,7 +54,7 @@ class ExecCommand extends Command
             self::BODY,
             '-B',
             InputOption::VALUE_OPTIONAL,
-            'The payload of the action',
+            'The payload of the event',
             '{}'
         );
     }

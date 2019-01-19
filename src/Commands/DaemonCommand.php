@@ -34,7 +34,7 @@ class DaemonCommand extends Command
     protected function configure()
     {
         $this->setName('daemon');
-        $this->setDescription('Run blocking daemon that listens for actions');
+        $this->setDescription('Run blocking daemon that listens for events');
         $this->setHelp('Not implemented');
         $this->addOption(
             'once',

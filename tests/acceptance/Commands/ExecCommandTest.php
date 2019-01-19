@@ -22,7 +22,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
     {
         $consumer = $this->construct(ExecCommand::class);
         $tester = new CommandTester($consumer);
-        $tester->execute(['action' => 'MOCK']);
+        $tester->execute([ExecCommand::ACTION => 'MOCK']);
         self::assertEquals('', $tester->getDisplay());
     }
 
@@ -36,7 +36,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $queue = $this->makeEmpty(QueueInterface::class, ['getEvents' => $events]);
         $consumer = $this->construct(ExecCommand::class, [$queue]);
         $tester = new CommandTester($consumer);
-        $tester->execute(['action' => 'MOCK']);
+        $tester->execute([ExecCommand::ACTION => 'MOCK']);
     }
 
     public function testThatDefaultHeadersArePassedToTheAction()
@@ -49,7 +49,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $queue = $this->makeEmpty(QueueInterface::class, ['getEvents' => $events]);
         $consumer = $this->construct(ExecCommand::class, [$queue]);
         $tester = new CommandTester($consumer);
-        $tester->execute(['action' => 'MOCK']);
+        $tester->execute([ExecCommand::ACTION => 'MOCK']);
     }
 
     public function testThatOptionalHeadersArePassedToTheAction()
@@ -62,6 +62,6 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $queue = $this->makeEmpty(QueueInterface::class, ['getEvents' => $events]);
         $consumer = $this->construct(ExecCommand::class, [$queue]);
         $tester = new CommandTester($consumer);
-        $tester->execute(['action' => 'MOCK', '-H' => ['name=john']]);
+        $tester->execute([ExecCommand::ACTION => 'MOCK', '-H' => ['name=john']]);
     }
 }
