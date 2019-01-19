@@ -9,6 +9,7 @@
 namespace MVF\Servicer\Queues;
 
 use Aws\Acm\Exception\AcmException;
+use function Functional\map;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\EventInterface;
@@ -102,17 +103,30 @@ class SqsQueue implements QueueInterface
 
     private function getMessageHeaders(array $message): \stdClass
     {
-        $headers = (object)[];
         if (isset($message['MessageAttributes'])) {
             $messageAttributes = $message['MessageAttributes'];
-            foreach ($messageAttributes as $attribute => $payload) {
-                $type = $payload['DataType'];
-                $field = strtolower($attribute);
-                $headers->$field = $payload[self::TYPES[$type]];
-            }
+            $keys = map($messageAttributes, $this->attributesToLowercase());
+            $values = map($messageAttributes, $this->attributesToValues());
+            $json = \GuzzleHttp\json_encode(array_combine($keys, $values));
+
+            return \GuzzleHttp\json_decode($json);
         }
 
-        return $headers;
+        return (object)[];
+    }
+
+    private function attributesToLowercase(): callable
+    {
+        return function ($value, $key) {
+            return strtolower($key);
+        };
+    }
+
+    private function attributesToValues(): callable
+    {
+        return function ($value) {
+            return $value[self::TYPES[$value['DataType']]];
+        };
     }
 
     private function getMessageBody(array $message): \stdClass
