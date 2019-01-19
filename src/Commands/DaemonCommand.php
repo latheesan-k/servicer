@@ -16,6 +16,7 @@ class DaemonCommand extends Command
      * @var QueueInterface[]
      */
     private $queues;
+    private $delay = 100;
 
     /**
      * DaemonCommand constructor.
@@ -36,7 +37,12 @@ class DaemonCommand extends Command
         $this->setName('daemon');
         $this->setDescription('Run blocking daemon that listens for actions');
         $this->setHelp('Not implemented');
-        $this->addOption('once', null, InputOption::VALUE_OPTIONAL, '');
+        $this->addOption(
+            'once',
+            null,
+            InputOption::VALUE_NONE,
+            'Run only one iteration'
+        );
     }
 
     /**
@@ -47,18 +53,22 @@ class DaemonCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        while (true) {
-            each($this->queues, invoker('listen'));
-            usleep(100);
-        }
-        // try {
-//
-// } catch (AcmException $exception) {
-// $this->writeln($exception->getMessage());
-// } catch (NoMessagesException $exception) {
-// Do nothing
-// } catch (\Exception $exception) {
-// $this->writeln($exception->getMessage());
-// }
+        $once = $input->getOption('once');
+
+        do {
+            each($this->queues, $this->handleListen($output));
+            usleep($this->delay);
+        } while ($once != true);
+    }
+
+    private function handleListen(OutputInterface $output): callable
+    {
+        return function (QueueInterface $queue) use ($output) {
+            try {
+                $queue->listen();
+            } catch (\Exception $exception) {
+                $output->writeln($exception->getMessage());
+            }
+        };
     }
 }

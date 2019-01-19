@@ -17,8 +17,8 @@ paths:
 
 coverage:
     enabled: true
-    low_limit: 30
-    high_limit: 60
+    low_limit: 60
+    high_limit: 95
     include:
         - src/*
     exclude:
