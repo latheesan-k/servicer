@@ -8,16 +8,12 @@
 
 namespace MVF\Servicer\Queues;
 
-use Aws\Acm\Exception\AcmException;
-use function Functional\map;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\EventInterface;
-use MVF\Servicer\Exceptions\NoMessagesException;
 use MVF\Servicer\QueueInterface;
-use PHPUnit\Runner\Exception;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use function Functional\each;
+use function Functional\map;
 
 class SqsQueue implements QueueInterface
 {

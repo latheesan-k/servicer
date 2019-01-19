@@ -20,14 +20,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 {
     private $messages;
 
-    protected function _before()
-    {
-        $this->messages = [
-            ['ReceiptHandle' => 'test']
-        ];
-    }
-
-    function _after()
+    public function _after()
     {
         Test::clean();
     }
@@ -62,7 +55,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $queue = new SqsQueue($config, $actions);
 
         $this->messages[0]['MessageAttributes'] = [
-            'Version' => ['DataType' => 'String', 'StringValue' => '1.0.0']
+            'Version' => ['DataType' => 'String', 'StringValue' => '1.0.0'],
         ];
 
         $result = $this->make(Result::class, ['get' => $this->messages]);
@@ -130,5 +123,12 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
         Test::double(SqsClient::class, ['instance' => $client]);
         $queue->listen();
+    }
+
+    protected function _before()
+    {
+        $this->messages = [
+            ['ReceiptHandle' => 'test'],
+        ];
     }
 }
