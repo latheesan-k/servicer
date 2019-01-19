@@ -36,11 +36,6 @@ class Consumer extends ConsoleOutput
         parent::__construct();
     }
 
-    public function find(string $command): Command
-    {
-        return $this->application->find($command);
-    }
-
     /**
      * Parses the params and runs the specified command.
      */
