@@ -2,33 +2,34 @@
 
 namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\QueueInterface;
+use MVF\Servicer\Actions\ActionBuilderFacade;
+use MVF\Servicer\EventHandlersInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Functional\each;
 
 class ExecCommand extends Command
 {
+    const QUEUE = 'queue';
     const ACTION = 'action';
     const HEADERS = 'header';
     const BODY = 'body';
 
     /**
-     * @var QueueInterface[]
+     * @var EventHandlersInterface
      */
-    private $queues;
+    private $eventHandlers;
 
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface ...$queues
+     * @param EventHandlersInterface $eventHandlers
      */
-    public function __construct(QueueInterface ...$queues)
+    public function __construct(EventHandlersInterface $eventHandlers)
     {
-        $this->queues = $queues;
+        $this->eventHandlers = $eventHandlers;
         parent::__construct();
     }
 
@@ -40,6 +41,7 @@ class ExecCommand extends Command
         $this->setName('exec');
         $this->setDescription('Run specified action');
         $this->setHelp('Not implemented');
+        $this->addArgument(self::QUEUE, InputArgument::REQUIRED, 'The queue where the event handler is defined');
         $this->addArgument(self::ACTION, InputArgument::REQUIRED, 'The action to be executed');
 
         $this->addOption(
@@ -69,14 +71,12 @@ class ExecCommand extends Command
     {
         $headers = $this->getHeaders($input);
         $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
-        each($this->queues, $this->triggerActions($headers, $body));
-    }
 
-    private function triggerActions(\stdClass $headers, \stdClass $body): callable
-    {
-        return function (QueueInterface $queue) use ($headers, $body) {
-            $queue->getEvents()->triggerAction($headers, $body);
-        };
+        $queue = $input->getArgument(self::QUEUE);
+        $eventHandlerClass = $this->eventHandlers->getEventHandler($queue);
+
+        $action = ActionBuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
+        $action->handle($headers, $body);
     }
 
     private function getHeaders(InputInterface $input): \stdClass

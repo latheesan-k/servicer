@@ -11,7 +11,8 @@ services:
     container_name: servicer-linter
     volumes:
     - ./src:/code/src
-    - ./tests/unit:/code/tests
+    - ./tests/acceptance:/code/tests/acceptance
+    - ./tests/unit:/code/tests/unit
     - ./linter/php_cs.php:/code/.php_cs.dist
     - ./linter/mvf_ruleset.xml:/code/mvf_ruleset.xml
 

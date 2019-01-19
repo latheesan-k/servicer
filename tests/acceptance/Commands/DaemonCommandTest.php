@@ -1,12 +1,11 @@
-<?php namespace MVF\Servicer\Tests;
+<?php
+
+namespace MVF\Servicer\Tests;
 
 use Codeception\Stub\Expected;
 use MVF\Servicer\Commands\DaemonCommand;
-use MVF\Servicer\Consumer;
 use MVF\Servicer\QueueInterface;
 use PHPUnit\Runner\Exception;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class DaemonCommandTest extends \Codeception\Test\Unit
