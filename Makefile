@@ -14,6 +14,9 @@ shell:
 test:
 	docker exec -it servicer vendor/bin/codecept run tests/$(suite)/$(file)
 
+test-all:
+	docker exec -it servicer vendor/bin/codecept run tests/
+
 coverage:
 	docker exec -it servicer-coverage phpdbg -qrr vendor/bin/codecept run --coverage-html
 
