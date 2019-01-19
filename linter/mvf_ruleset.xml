@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="MVF Standard">
     <file>src</file>
+    <file>tests</file>
 
     <arg value="s"/>
     <arg name="colors"/>
