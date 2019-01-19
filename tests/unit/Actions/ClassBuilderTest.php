@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer\Tests;
+namespace MVF\Servicer\Action\Tests;
 
 use AspectMock\Test;
 use MVF\Servicer\Actions\ActionMockA;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer\Tests;
+namespace MVF\Servicer\Action\Tests;
 
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\ActionBuilderFacade;

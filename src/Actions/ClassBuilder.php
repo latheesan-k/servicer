@@ -36,9 +36,7 @@ class ClassBuilder
 
     private function buildClassWithInjections(array $classWithInjections): array
     {
-        [$class, $injectedClasses] = count($classWithInjections) > 1
-            ? $classWithInjections
-            : [$classWithInjections[0], []];
+        [$class, $injectedClasses] = count($classWithInjections) > 1 ? $classWithInjections : [$classWithInjections[0], []];
 
         $injections = map($injectedClasses, $this->buildInjections());
 

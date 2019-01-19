@@ -7,7 +7,7 @@ use MVF\Servicer\UndefinedAction;
 class Constant
 {
     /**
-     * @param string $event
+     * @param  string $event
      * @return string|array
      */
     public static function getAction(string $event)
