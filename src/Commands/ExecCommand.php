@@ -54,7 +54,7 @@ class ExecCommand extends Command
 
         $this->addOption(
             self::BODY,
-            '-B',
+            '-b',
             InputOption::VALUE_OPTIONAL,
             'The payload of the event',
             '{}'

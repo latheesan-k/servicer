@@ -2,8 +2,10 @@
 
 include __DIR__.'/vendor/autoload.php';
 
-use MVF\Servicer\Consumer;
+use MVF\Servicer\Commands\DaemonCommand;
+use Symfony\Component\Console\Application;
 
-$consumer = new Consumer();
-
-$consumer->handle();
+$daemon = new DaemonCommand();
+$app = new Application();
+$app->addCommands([$daemon]);
+$app->run();
