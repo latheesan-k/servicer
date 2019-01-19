@@ -5,6 +5,7 @@ suites:
         path: unit
 
 settings:
+    bootstrap: _bootstrap.php
     shuffle: true
     lint: true
 

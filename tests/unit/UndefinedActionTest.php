@@ -9,7 +9,7 @@ class UndefinedActionTest extends \Codeception\Test\Unit
     public function testHandlePrintsErrorMessage()
     {
         $test = function (string $message) {
-            $this->assertContains('TEST', $message);
+            $this->assertContains('Event is not defined', $message);
         };
 
         $action = $this->make(UndefinedAction::class, ['writeln' => $test]);
