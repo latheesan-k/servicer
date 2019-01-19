@@ -49,5 +49,14 @@ class DaemonCommand extends Command
             each($this->queues, invoker('listen'));
             usleep(100);
         }
+//        try {
+//
+//        } catch (AcmException $exception) {
+//            $this->writeln($exception->getMessage());
+//        } catch (NoMessagesException $exception) {
+//            // Do nothing
+//        } catch (\Exception $exception) {
+//            $this->writeln($exception->getMessage());
+//        }
     }
 }

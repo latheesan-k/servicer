@@ -6,7 +6,7 @@ abstract class Config implements ConfigInterface
 {
     abstract public function getName(): string;
 
-    public function skip(): bool
+    public function isCircuitBreakerClosed(): bool
     {
         return false;
     }

@@ -14,10 +14,11 @@ use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\EventInterface;
 use MVF\Servicer\Exceptions\NoMessagesException;
 use MVF\Servicer\QueueInterface;
+use PHPUnit\Runner\Exception;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function Functional\each;
 
-class SqsQueue extends ConsoleOutput implements QueueInterface
+class SqsQueue implements QueueInterface
 {
     const TYPES = [
         'String' => 'StringValue',
@@ -38,24 +39,15 @@ class SqsQueue extends ConsoleOutput implements QueueInterface
     {
         $this->config = $config;
         $this->events = $events;
-        parent::__construct();
     }
 
     public function listen(): void
     {
-        if ($this->config->skip()) {
+        if ($this->config->isCircuitBreakerClosed()) {
             return;
         }
 
-        try {
-            each($this->receiveMessages(), $this->handleMessages());
-        } catch (AcmException $exception) {
-            $this->writeln($exception->getMessage());
-        } catch (NoMessagesException $exception) {
-            // Do nothing
-        } catch (\Exception $exception) {
-            $this->writeln($exception->getMessage());
-        }
+        each($this->receiveMessages(), $this->handleMessages());
     }
 
     public function getEvents(): EventInterface
@@ -85,12 +77,12 @@ class SqsQueue extends ConsoleOutput implements QueueInterface
             ]
         );
 
-        $messages = $result->get('Messages');
-        if (empty($messages) === true) {
-            throw new NoMessagesException();
+        $message = $result->get('Messages');
+        if (isset($message)) {
+            return $message;
         }
 
-        return $messages;
+        return [];
     }
 
     private function deleteMessage(string $receipt)
@@ -111,8 +103,8 @@ class SqsQueue extends ConsoleOutput implements QueueInterface
     private function getMessageHeaders(array $message): \stdClass
     {
         $headers = (object)[];
-        $messageAttributes = $message['MessageAttributes'];
-        if (empty($messageAttributes) === false) {
+        if (isset($message['MessageAttributes'])) {
+            $messageAttributes = $message['MessageAttributes'];
             foreach ($messageAttributes as $attribute => $payload) {
                 $type = $payload['DataType'];
                 $field = strtolower($attribute);

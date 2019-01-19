@@ -10,7 +10,7 @@ class EventHandler extends ConsoleOutput implements EventInterface
 {
     const MOCK = ActionMockA::class;
 
-    final public function triggerAction(\stdClass $headers, \stdClass $body): void
+    public function triggerAction(\stdClass $headers, \stdClass $body): void
     {
         $source = static::class . '::' . $headers->event;
         $action = ActionBuilderFacade::buildActionFor($source);

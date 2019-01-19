@@ -6,5 +6,5 @@ interface ConfigInterface
 {
     public function getName(): string;
 
-    public function skip(): bool;
+    public function isCircuitBreakerClosed(): bool;
 }
