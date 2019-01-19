@@ -4,16 +4,16 @@ services:
     image: drupsys/php-package-alpine
     container_name: servicer
     volumes:
-    - .:/app:cached
+    - .:/app
 
   linter:
     image: drupsys/php-linter
     container_name: servicer-linter
     volumes:
-    - ./src:/code/src:cached
-    - ./tests/unit:/code/tests:cached
-    - ./linter/php_cs.php:/code/.php_cs.dist:cached
-    - ./linter/mvf_ruleset.xml:/code/mvf_ruleset.xml:cached
+    - ./src:/code/src
+    - ./tests/unit:/code/tests
+    - ./linter/php_cs.php:/code/.php_cs.dist
+    - ./linter/mvf_ruleset.xml:/code/mvf_ruleset.xml
 
   coverage:
     build: .
@@ -21,5 +21,5 @@ services:
     ports:
       - 8000:80
     volumes:
-    - .:/code:cached
-    - ./tests/_output/coverage:/usr/share/nginx/html:cached
+    - .:/code
+    - ./tests/_output/coverage:/usr/share/nginx/html

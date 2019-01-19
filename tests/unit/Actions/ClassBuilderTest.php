@@ -44,4 +44,11 @@ class ClassBuilderTest extends \Codeception\Test\Unit
         Test::double(Constant::class, ['getAction' => $class]);
         self::assertInstanceOf(ActionMockB::class, $this->builder->buildActionFor('TEST'));
     }
+
+    public function testClassBuilderShouldConstructObjectIfArrayWithNoInjectionsIsProvided()
+    {
+        $class = [ActionMockA::class];
+        Test::double(Constant::class, ['getAction' => $class]);
+        self::assertInstanceOf(ActionMockA::class, $this->builder->buildActionFor('TEST'));
+    }
 }
