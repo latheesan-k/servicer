@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer\Consumer;
+namespace MVF\Servicer;
 
 use Symfony\Component\Console\Output\ConsoleOutput;
 

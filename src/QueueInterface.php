@@ -6,7 +6,7 @@
  * Time: 00:47.
  */
 
-namespace MVF\Servicer\Consumer;
+namespace MVF\Servicer;
 
 interface QueueInterface
 {

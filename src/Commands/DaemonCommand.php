@@ -1,8 +1,8 @@
 <?php
 
-namespace MVF\Servicer\Consumer\Commands;
+namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\Consumer\QueueInterface;
+use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

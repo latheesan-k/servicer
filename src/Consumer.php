@@ -1,9 +1,9 @@
 <?php
 
-namespace MVF\Servicer\Consumer;
+namespace MVF\Servicer;
 
-use MVF\Servicer\Consumer\Commands\DaemonCommand;
-use MVF\Servicer\Consumer\Commands\ExecCommand;
+use MVF\Servicer\Commands\DaemonCommand;
+use MVF\Servicer\Commands\ExecCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer\Consumer\Exceptions;
+namespace MVF\Servicer\Exceptions;
 
 class NoMessagesException extends \Exception
 {

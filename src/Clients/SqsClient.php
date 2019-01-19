@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer\Consumer\Clients;
+namespace MVF\Servicer\Clients;
 
 use Aws\Credentials\Credentials;
 use Aws\Sqs\SqsClient as Client;

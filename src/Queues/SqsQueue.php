@@ -6,14 +6,14 @@
  * Time: 00:51.
  */
 
-namespace MVF\Servicer\Consumer\Queues;
+namespace MVF\Servicer\Queues;
 
 use Aws\Acm\Exception\AcmException;
-use MVF\Servicer\Consumer\Clients\SqsClient;
-use MVF\Servicer\Consumer\ConfigInterface;
-use MVF\Servicer\Consumer\EventInterface;
-use MVF\Servicer\Consumer\Exceptions\NoMessagesException;
-use MVF\Servicer\Consumer\QueueInterface;
+use MVF\Servicer\Clients\SqsClient;
+use MVF\Servicer\ConfigInterface;
+use MVF\Servicer\EventInterface;
+use MVF\Servicer\Exceptions\NoMessagesException;
+use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function Functional\each;
 

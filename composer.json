@@ -21,6 +21,7 @@
         }
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2"
+        "symfony/var-dumper": "^4.2",
+        "codeception/codeception": "^2.5"
     }
 }
