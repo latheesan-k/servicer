@@ -2,7 +2,7 @@
     "name": "0nedark/servicer",
     "type": "library",
     "license": "MIT",
-    "description": "",
+    "description": "Defines common php consumers",
     "authors": [
         {
             "name": "Dovydas Rupsys",
