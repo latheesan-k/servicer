@@ -13,3 +13,10 @@ paths:
     output: tests/_output
     support: tests/_support
     data: tests
+
+coverage:
+    enabled: true
+    low_limit: 30
+    high_limit: 60
+    include:
+        - src/*

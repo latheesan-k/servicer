@@ -11,6 +11,9 @@ stop:
 shell:
 	docker exec -it servicer sh
 
+coverage:
+	docker exec -it servicer-coverage phpdbg -qrr vendor/bin/codecept run --coverage-html
+
 lint:
 	docker exec -it servicer-linter php-cs-fixer fix
 	docker exec -it servicer-linter phpcbf --standard=mvf_ruleset.xml || true
