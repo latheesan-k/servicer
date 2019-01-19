@@ -12,7 +12,7 @@ shell:
 	docker exec -it servicer sh
 
 test:
-	docker exec -it servicer vendor/bin/codecept run
+	docker exec -it servicer vendor/bin/codecept run tests/unit/$(file)
 
 coverage:
 	docker exec -it servicer-coverage phpdbg -qrr vendor/bin/codecept run --coverage-html

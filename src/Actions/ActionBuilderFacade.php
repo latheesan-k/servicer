@@ -8,6 +8,6 @@ class ActionBuilderFacade
 {
     public static function buildActionFor(?string $event): ActionInterface
     {
-        return (new ActionBuilder())->buildActionFor($event);
+        return (new ClassBuilder())->buildActionFor($event);
     }
 }

@@ -10,6 +10,11 @@ use MVF\Servicer\UndefinedAction;
 
 class EventHandlerTest extends \Codeception\Test\Unit
 {
+    public function _after()
+    {
+        Test::clean();
+    }
+
     public function testBuildActionReturnsInvalidActionIfEventIsNotFound()
     {
         $test = function (string $message) {

@@ -3,10 +3,10 @@
 namespace MVF\Servicer\Actions;
 
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\UndefinedAction;
+use MVF\Servicer\Exceptions\InvalidInjectionException;
 use function Functional\map;
 
-class ActionBuilder
+class ClassBuilder
 {
     /**
      * Get the specified action from the list of defined actions.
@@ -14,28 +14,26 @@ class ActionBuilder
      * @param null|string $event Name of the event
      *
      * @return ActionInterface
+     * @throws InvalidInjectionException
      */
     public function buildActionFor(?string $event): ActionInterface
     {
-        if (defined($event) === true) {
-            $class = constant($event);
-
-            return $this->buildClass($class);
-        }
-
-        return new UndefinedAction();
+        return $this->buildClass(Constant::getAction($event));
     }
 
     /**
      * @param string|array $class
      *
      * @return mixed
+     * @throws InvalidInjectionException
      */
     private function buildClass($class)
     {
         $injections = [];
-        if (is_array($class) === true) {
+        if (is_array($class) === true && count($class) > 1) {
             [$class, $injections] = $this->buildClassWithInjections($class);
+        } elseif (is_array($class) === true) {
+            throw new InvalidInjectionException($class);
         }
 
         return new $class(...$injections);
