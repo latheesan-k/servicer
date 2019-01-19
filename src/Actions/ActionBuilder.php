@@ -2,9 +2,9 @@
 
 namespace MVF\Servicer\Actions;
 
-use function Functional\map;
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\UndefinedAction;
+use function Functional\map;
 
 class ActionBuilder
 {

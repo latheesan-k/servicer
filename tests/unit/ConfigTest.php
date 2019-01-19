@@ -1,4 +1,6 @@
-<?php namespace MVF\Servicer\Tests;
+<?php
+
+namespace MVF\Servicer\Tests;
 
 class ConfigTest extends \Codeception\Test\Unit
 {
