@@ -30,7 +30,6 @@ class DaemonCommandTest extends \Codeception\Test\Unit
         $consumer = $this->construct(DaemonCommand::class, [$queue], ['delay' => 0]);
         $tester = new CommandTester($consumer);
         $tester->execute(['--once' => true]);
-        self::assertEquals('', $tester->getDisplay());
     }
 
     public function testThatExceptionsThrownByTheQueueAreHandled()
