@@ -1,37 +1,30 @@
 <?php
 
-namespace MVF\Servicer\Commands;
+namespace MVF\Servicer\Consumer\Commands;
 
-use MVF\Servicer\BaseCommand;
-use MVF\Servicer\ErrorInterface;
-use MVF\Servicer\QueueInterface;
+use MVF\Servicer\Consumer\QueueInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Functional\each;
+use function Functional\invoker;
 
-class DaemonCommand extends BaseCommand implements ErrorInterface
+class DaemonCommand extends Command
 {
-    const QUEUE = 'queue';
     /**
-     * @var QueueInterface
+     * @var QueueInterface[]
      */
-    private $queue;
+    private $queues;
 
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface $queue
+     * @param QueueInterface ...$queues
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(QueueInterface ...$queues)
     {
-        $this->queue = $queue;
+        $this->queues = $queues;
         parent::__construct();
-    }
-
-    public function handleException(\Exception $exception): void
-    {
-        $output = new ConsoleOutput();
-        $output->writeln($exception->getMessage());
     }
 
     /**
@@ -52,6 +45,9 @@ class DaemonCommand extends BaseCommand implements ErrorInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->queue->listen($this->getActions(), $this);
+        while (true) {
+            each($this->queues, invoker('listen'));
+            usleep(100);
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace MVF\Servicer;
+namespace MVF\Servicer\Consumer;
 
 interface ActionInterface
 {

@@ -6,9 +6,11 @@
  * Time: 00:47.
  */
 
-namespace MVF\Servicer;
+namespace MVF\Servicer\Consumer;
 
 interface QueueInterface
 {
-    public function listen(ActionsInterface $actions, ErrorInterface $error): void;
+    public function listen(): void;
+
+    public function getEvents(): EventInterface;
 }

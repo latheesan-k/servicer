@@ -1,18 +1,36 @@
 <?php
 
-namespace MVF\Servicer\Commands;
+namespace MVF\Servicer\Consumer\Commands;
 
-use MVF\Servicer\BaseCommand;
+use MVF\Servicer\Consumer\QueueInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Functional\each;
 
-class ExecCommand extends BaseCommand
+class ExecCommand extends Command
 {
     const ACTION = 'action';
     const HEADERS = 'header';
     const BODY = 'body';
+
+    /**
+     * @var QueueInterface[]
+     */
+    private $queues;
+
+    /**
+     * DaemonCommand constructor.
+     *
+     * @param QueueInterface ...$queues
+     */
+    public function __construct(QueueInterface ...$queues)
+    {
+        $this->queues = $queues;
+        parent::__construct();
+    }
 
     /**
      * Configures the current command.
@@ -49,6 +67,20 @@ class ExecCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $headers = $this->getHeaders($input);
+        $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
+        each($this->queues, $this->triggerActions($headers, $body));
+    }
+
+    private function triggerActions(\stdClass $headers, \stdClass $body): callable
+    {
+        return function (QueueInterface $queue) use ($headers, $body) {
+            $queue->getEvents()->triggerAction($headers, $body);
+        };
+    }
+
+    private function getHeaders(InputInterface $input): \stdClass
+    {
         $headers = (object)[];
         foreach ($input->getOption(self::HEADERS) as $header) {
             $pattern = '/^(\w*)=(.*)$/';
@@ -59,10 +91,8 @@ class ExecCommand extends BaseCommand
             }
         }
 
-        $headers->action = $input->getArgument(self::ACTION);
-        $actions = $this->getActions();
-        $action = $actions->getAction($input->getArgument(self::ACTION));
-        $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
-        $action->handle($headers, $body);
+        $headers->event = $input->getArgument(self::ACTION);
+
+        return $headers;
     }
 }

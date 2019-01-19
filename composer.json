@@ -12,7 +12,8 @@
     "require": {
         "php": "7.1.*",
         "symfony/console": "^4.2",
-        "aws/aws-sdk-php": "^3.82"
+        "aws/aws-sdk-php": "^3.82",
+        "lstrojny/functional-php": "^1.9"
     },
     "autoload": {
         "psr-4": {

@@ -6,95 +6,130 @@
  * Time: 00:51.
  */
 
-namespace MVF\Servicer\Queues;
+namespace MVF\Servicer\Consumer\Queues;
 
 use Aws\Acm\Exception\AcmException;
-use Aws\Credentials\Credentials;
-use Aws\Sqs\SqsClient;
-use MVF\Servicer\ActionsInterface;
-use MVF\Servicer\ErrorInterface;
-use MVF\Servicer\QueueInterface;
+use MVF\Servicer\Consumer\Clients\SqsClient;
+use MVF\Servicer\Consumer\ConfigInterface;
+use MVF\Servicer\Consumer\EventInterface;
+use MVF\Servicer\Consumer\Exceptions\NoMessagesException;
+use MVF\Servicer\Consumer\QueueInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use function Functional\each;
 
-class SqsQueue implements QueueInterface
+class SqsQueue extends ConsoleOutput implements QueueInterface
 {
-    const QUEUE = 'queue';
     const TYPES = [
         'String' => 'StringValue',
         'Number' => 'StringValue',
         'Binary' => 'BinaryValue',
     ];
-    /**
-     * @var string
-     */
-    private $queue;
 
-    public function __construct(string $queue)
+    /**
+     * @var EventInterface
+     */
+    private $events;
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
+    public function __construct(ConfigInterface $config, EventInterface $events)
     {
-        $this->queue = $queue;
+        $this->config = $config;
+        $this->events = $events;
+        parent::__construct();
     }
 
-    public function listen(ActionsInterface $actions, ErrorInterface $error): void
+    public function listen(): void
     {
-        $client = new SqsClient(
+        if ($this->config->skip()) {
+            return;
+        }
+
+        try {
+            each($this->receiveMessages(), $this->handleMessages());
+        } catch (AcmException $exception) {
+            $this->writeln($exception->getMessage());
+        } catch (NoMessagesException $exception) {
+            // Do nothing
+        } catch (\Exception $exception) {
+            $this->writeln($exception->getMessage());
+        }
+    }
+
+    public function getEvents(): EventInterface
+    {
+        return $this->events;
+    }
+
+    private function handleMessages(): callable
+    {
+        return function ($message) {
+            $headers = $this->getMessageHeaders($message);
+            $body = $this->getMessageBody($message);
+            $this->events->triggerAction($headers, $body);
+            $this->deleteMessage($message['ReceiptHandle']);
+        };
+    }
+
+    private function receiveMessages(): array
+    {
+        $result = SqsClient::instance()->receiveMessage(
             [
-                'region'      => getenv('AWS_REGION'),
-                'version'     => getenv('SQS_VERSION'),
-                'credentials' => new Credentials(
-                    getenv('AWS_ACCESS_KEY_ID'),
-                    getenv('AWS_SECRET_ACCESS_KEY')
-                ),
+                'AttributeNames'        => ['SentTimestamp'],
+                'MaxNumberOfMessages'   => 1,
+                'MessageAttributeNames' => ['All'],
+                'QueueUrl'              => $this->getSqsUrl(),
+                'WaitTimeSeconds'       => 0,
             ]
         );
 
-        while (true) {
-            try {
-                $queue = getenv('SQS_URL') . $this->queue;
-                $result = $client->receiveMessage(
-                    [
-                        'AttributeNames'        => ['SentTimestamp'],
-                        'MaxNumberOfMessages'   => 1,
-                        'MessageAttributeNames' => ['All'],
-                        'QueueUrl'              => $queue,
-                        'WaitTimeSeconds'       => 0,
-                    ]
-                );
-
-                $messages = $result->get('Messages');
-                if (empty($messages) === true) {
-                    continue;
-                }
-
-                foreach ($messages as $message) {
-                    $headers = (object)[];
-                    $messageAttributes = $message['MessageAttributes'];
-                    if (empty($messageAttributes) === false) {
-                        foreach ($messageAttributes as $attribute => $payload) {
-                            $type = $payload['DataType'];
-                            $field = strtolower($attribute);
-                            $headers->$field = $payload[self::TYPES[$type]];
-                        }
-                    }
-
-                    $body = (object)[];
-                    if (isset($message['Body']) === true) {
-                        $body = \GuzzleHttp\json_decode($message['Body']);
-                    }
-
-                    $action = $actions->getAction($headers->action);
-                    $action->handle($headers, $body);
-
-                    $client->deleteMessage(
-                        [
-                            'QueueUrl'      => $queue,
-                            'ReceiptHandle' => $message['ReceiptHandle'],
-                        ]
-                    );
-                }
-            } catch (AcmException $exception) {
-                $error->handleException($exception);
-            }
-
-            usleep(10);
+        $messages = $result->get('Messages');
+        if (empty($messages) === true) {
+            throw new NoMessagesException();
         }
+
+        return $messages;
+    }
+
+    private function deleteMessage(string $receipt)
+    {
+        SqsClient::instance()->deleteMessage(
+            [
+                'QueueUrl'      => $this->getSqsUrl(),
+                'ReceiptHandle' => $receipt,
+            ]
+        );
+    }
+
+    private function getSqsUrl(): string
+    {
+        return getenv('SQS_URL') . $this->config->getName();
+    }
+
+    private function getMessageHeaders(array $message): \stdClass
+    {
+        $headers = (object)[];
+        $messageAttributes = $message['MessageAttributes'];
+        if (empty($messageAttributes) === false) {
+            foreach ($messageAttributes as $attribute => $payload) {
+                $type = $payload['DataType'];
+                $field = strtolower($attribute);
+                $headers->$field = $payload[self::TYPES[$type]];
+            }
+        }
+
+        return $headers;
+    }
+
+    private function getMessageBody(array $message): \stdClass
+    {
+        $body = (object)[];
+        if (isset($message['Body']) === true) {
+            $body = \GuzzleHttp\json_decode($message['Body']);
+        }
+
+        return $body;
     }
 }

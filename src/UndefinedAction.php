@@ -1,8 +1,10 @@
 <?php
 
-namespace MVF\Servicer;
+namespace MVF\Servicer\Consumer;
 
-class UndefinedAction implements ActionInterface
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+class UndefinedAction extends ConsoleOutput implements ActionInterface
 {
     /**
      * Executes the action.
@@ -12,6 +14,6 @@ class UndefinedAction implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        echo 'Received undefined action "' . $headers->action . '"' . PHP_EOL;
+        $this->writeln('Event is not defined: ' . \GuzzleHttp\json_encode($headers) . ' ' . \GuzzleHttp\json_encode($body));
     }
 }

@@ -1,12 +1,13 @@
 <?php
 
-namespace MVF\Servicer;
+namespace MVF\Servicer\Consumer;
 
-use MVF\Servicer\Commands\DaemonCommand;
-use MVF\Servicer\Commands\ExecCommand;
+use MVF\Servicer\Consumer\Commands\DaemonCommand;
+use MVF\Servicer\Consumer\Commands\ExecCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
-class Consumer
+class Consumer extends ConsoleOutput
 {
     /**
      * Defines console application.
@@ -14,45 +15,34 @@ class Consumer
      * @var Application
      */
     private $application;
-    /**
-     * Defines the list of commands.
-     *
-     * @var BaseCommand[]
-     */
-    private $commands;
 
     /**
      * Service constructor.
      *
-     * @param null|QueueInterface $queue defines the queue driver used by the daemon
+     * @param QueueInterface[] $queues defines the queue driver used by the daemon
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(QueueInterface ...$queues)
     {
         $this->application = new Application();
 
-        $exec = new ExecCommand();
-        $this->application->add($exec);
-        $this->commands[] = $exec;
-
-        $daemon = new DaemonCommand($queue);
+        $daemon = new ExecCommand(...$queues);
         $this->application->add($daemon);
-        $this->commands[] = $daemon;
+
+        $daemon = new DaemonCommand(...$queues);
+        $this->application->add($daemon);
+
+        parent::__construct();
     }
 
     /**
      * Parses the params and runs the specified command.
-     *
-     * @param ActionsInterface $actions Defines the list of actions
      */
-    public function handle(ActionsInterface $actions)
+    public function handle()
     {
-        foreach ($this->commands as $command) {
-            $command->setActions($actions);
-        }
-
         try {
             $this->application->run();
         } catch (\Exception $e) {
+            $this->writeln($e->getMessage());
             exit(1);
         }
     }
