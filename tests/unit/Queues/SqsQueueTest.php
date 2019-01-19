@@ -25,6 +25,13 @@ class SqsQueueTest extends \Codeception\Test\Unit
         Test::clean();
     }
 
+    public function _before()
+    {
+        $this->messages = [
+            ['ReceiptHandle' => 'test'],
+        ];
+    }
+
     public function testThatTheGetEventsReturnsTheInjectedEventsObject()
     {
         $config = $this->makeEmpty(Config::class);
@@ -123,12 +130,5 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
         Test::double(SqsClient::class, ['instance' => $client]);
         $queue->listen();
-    }
-
-    protected function _before()
-    {
-        $this->messages = [
-            ['ReceiptHandle' => 'test'],
-        ];
     }
 }

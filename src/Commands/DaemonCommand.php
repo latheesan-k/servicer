@@ -5,6 +5,7 @@ namespace MVF\Servicer\Commands;
 use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function Functional\each;
 use function Functional\invoker;
@@ -35,6 +36,7 @@ class DaemonCommand extends Command
         $this->setName('daemon');
         $this->setDescription('Run blocking daemon that listens for actions');
         $this->setHelp('Not implemented');
+        $this->addOption('once', null, InputOption::VALUE_OPTIONAL, '');
     }
 
     /**
@@ -49,14 +51,14 @@ class DaemonCommand extends Command
             each($this->queues, invoker('listen'));
             usleep(100);
         }
-//        try {
+        // try {
 //
-//        } catch (AcmException $exception) {
-//            $this->writeln($exception->getMessage());
-//        } catch (NoMessagesException $exception) {
-//            // Do nothing
-//        } catch (\Exception $exception) {
-//            $this->writeln($exception->getMessage());
-//        }
+// } catch (AcmException $exception) {
+// $this->writeln($exception->getMessage());
+// } catch (NoMessagesException $exception) {
+// Do nothing
+// } catch (\Exception $exception) {
+// $this->writeln($exception->getMessage());
+// }
     }
 }

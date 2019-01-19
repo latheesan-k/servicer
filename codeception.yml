@@ -21,3 +21,5 @@ coverage:
     high_limit: 60
     include:
         - src/*
+    exclude:
+        - src/Clients/*
