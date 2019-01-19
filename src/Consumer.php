@@ -6,7 +6,6 @@ use MVF\Servicer\Commands\DaemonCommand;
 use MVF\Servicer\Commands\ExecCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class Consumer extends ConsoleOutput
