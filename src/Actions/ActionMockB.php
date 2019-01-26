@@ -7,8 +7,14 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ActionMockB implements ActionInterface
 {
+    /**
+     * @var ConsoleOutput
+     */
+    private $output;
+
     public function __construct(ConsoleOutput $output)
     {
+        $this->output = $output;
     }
 
     /**
@@ -19,6 +25,6 @@ class ActionMockB implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        // TODO: Implement handle() method.
+        $this->output->writeln("test");
     }
 }

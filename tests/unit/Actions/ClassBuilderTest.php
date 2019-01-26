@@ -3,6 +3,7 @@
 namespace MVF\Servicer\Action\Tests;
 
 use AspectMock\Test;
+use Codeception\Stub\Expected;
 use MVF\Servicer\Actions\ActionMockA;
 use MVF\Servicer\Actions\ActionMockB;
 use MVF\Servicer\Actions\ClassBuilder;
@@ -24,6 +25,7 @@ class ClassBuilderTest extends \Codeception\Test\Unit
 
     public function _after()
     {
+        ClassBuilder::clean();
         Test::clean();
     }
 
@@ -50,5 +52,26 @@ class ClassBuilderTest extends \Codeception\Test\Unit
         $class = [ActionMockA::class];
         Test::double(Constant::class, ['getAction' => $class]);
         self::assertInstanceOf(ActionMockA::class, $this->builder->buildActionFor('TEST'));
+    }
+
+    public function testThatThereIsAWayToDefineInstanceObjectsForSpecificClasses()
+    {
+        $consoleOutput = $this->make(ActionMockA::class, ['writeln' => Expected::once()]);
+        ClassBuilder::setInstance(ActionMockA::class, $consoleOutput);
+
+        Test::double(Constant::class, ['getAction' => ActionMockA::class]);
+        $action = $this->builder->buildActionFor('TEST');
+        $action->handle((object)[], (object)[]);
+    }
+
+    public function testThatThereIsAWayToDefineInstanceObjectsForSpecificInjection()
+    {
+        $consoleOutput = $this->make(ConsoleOutput::class, ['writeln' => Expected::once()]);
+        ClassBuilder::setInstance(ConsoleOutput::class, $consoleOutput);
+
+        $class = [ActionMockB::class, [ConsoleOutput::class]];
+        Test::double(Constant::class, ['getAction' => $class]);
+        $action = $this->builder->buildActionFor('TEST');
+        $action->handle((object)[], (object)[]);
     }
 }

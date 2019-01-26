@@ -3,8 +3,9 @@
 namespace MVF\Servicer\Actions;
 
 use MVF\Servicer\ActionInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
-class ActionMockA implements ActionInterface
+class ActionMockA extends ConsoleOutput implements ActionInterface
 {
     /**
      * Executes the action.
@@ -14,6 +15,6 @@ class ActionMockA implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        // TODO: Implement handle() method.
+        $this->writeln("test");
     }
 }

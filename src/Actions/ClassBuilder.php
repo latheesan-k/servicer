@@ -7,16 +7,28 @@ use function Functional\map;
 
 class ClassBuilder
 {
+    private static $instances = [];
+
     /**
      * Get the specified action from the list of defined actions.
      *
-     * @param null|string $event Name of the event
+     * @param string $event Name of the event
      *
      * @return ActionInterface
      */
-    public function buildActionFor(?string $event): ActionInterface
+    public function buildActionFor(string $event): ActionInterface
     {
         return $this->buildClass(Constant::getAction($event));
+    }
+
+    public static function setInstance(string $class, $instance)
+    {
+        self::$instances[$class] = $instance;
+    }
+
+    public static function clean()
+    {
+        self::$instances = [];
     }
 
     /**
@@ -29,6 +41,15 @@ class ClassBuilder
         $injections = [];
         if (is_array($class) === true) {
             [$class, $injections] = $this->buildClassWithInjections($class);
+        }
+
+        return $this->checkIfInstanceIsSet($class, $injections);
+    }
+
+    private function checkIfInstanceIsSet($class, $injections)
+    {
+        if (isset(self::$instances[$class])) {
+            return self::$instances[$class];
         }
 
         return new $class(...$injections);
