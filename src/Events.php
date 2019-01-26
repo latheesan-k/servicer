@@ -9,10 +9,9 @@ use function GuzzleHttp\json_encode;
 
 class Events extends ConsoleOutput implements EventsInterface
 {
+    const __MOCK__ = ActionMockA::class;
     const __UNDEFINED__ = 'Event is not defined: ';
     const __PROCESSED__ = 'Event processed: ';
-
-    const MOCK = ActionMockA::class;
 
     public function triggerAction(\stdClass $headers, \stdClass $body): void
     {

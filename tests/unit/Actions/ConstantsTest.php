@@ -11,7 +11,7 @@ class ConstantsTest extends \Codeception\Test\Unit
 {
     public function testShouldReturnValueIfConstantIsDefined()
     {
-        self::assertEquals(ActionMockA::class, Constant::getAction(Events::class . '::MOCK'));
+        self::assertEquals(ActionMockA::class, Constant::getAction(Events::class . '::__MOCK__'));
     }
 
     public function testShouldReturnUndefinedActionIfConstantIsNotDefined()
