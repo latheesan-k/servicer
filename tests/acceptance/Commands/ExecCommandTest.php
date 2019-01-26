@@ -7,7 +7,7 @@ use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\ActionBuilderFacade;
 use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\EventHandler;
-use MVF\Servicer\EventHandlersInterface;
+use MVF\Servicer\HandlersInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExecCommandTest extends \Codeception\Test\Unit
@@ -27,7 +27,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $this->makeEmpty(
-            EventHandlersInterface::class,
+            HandlersInterface::class,
             ['getEventHandler' => EventHandler::class]
         );
 
@@ -46,7 +46,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $this->makeEmpty(
-            EventHandlersInterface::class,
+            HandlersInterface::class,
             ['getEventHandler' => EventHandler::class]
         );
 
@@ -65,7 +65,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $this->makeEmpty(
-            EventHandlersInterface::class,
+            HandlersInterface::class,
             ['getEventHandler' => EventHandler::class]
         );
 
