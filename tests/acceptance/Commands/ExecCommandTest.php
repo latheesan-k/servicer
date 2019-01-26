@@ -6,7 +6,7 @@ use AspectMock\Test;
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\ActionBuilderFacade;
 use MVF\Servicer\Commands\ExecCommand;
-use MVF\Servicer\EventHandler;
+use MVF\Servicer\Handlers;
 use MVF\Servicer\HandlersInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -28,7 +28,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
 
         $eventHandlers = $this->makeEmpty(
             HandlersInterface::class,
-            ['getEventHandler' => EventHandler::class]
+            ['getEventHandler' => Handlers::class]
         );
 
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
@@ -47,7 +47,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
 
         $eventHandlers = $this->makeEmpty(
             HandlersInterface::class,
-            ['getEventHandler' => EventHandler::class]
+            ['getEventHandler' => Handlers::class]
         );
 
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
@@ -66,7 +66,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
 
         $eventHandlers = $this->makeEmpty(
             HandlersInterface::class,
-            ['getEventHandler' => EventHandler::class]
+            ['getEventHandler' => Handlers::class]
         );
 
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);

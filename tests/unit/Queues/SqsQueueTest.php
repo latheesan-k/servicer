@@ -13,7 +13,7 @@ use Aws\Result;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\Settings;
-use MVF\Servicer\EventHandler;
+use MVF\Servicer\Handlers;
 use MVF\Servicer\Queues\SqsQueue;
 
 class SqsQueueTest extends \Codeception\Test\Unit
@@ -35,7 +35,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
     public function testThatTheGetEventsReturnsTheInjectedEventsObject()
     {
         $config = $this->makeEmpty(Settings::class);
-        $actions = $this->make(EventHandler::class);
+        $actions = $this->make(Handlers::class);
         $queue = new SqsQueue($config, $actions);
         self::assertEquals($actions, $queue->getEvents());
     }
@@ -43,7 +43,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
     public function testCircuitBreakerWorks()
     {
         $config = $this->makeEmpty(Settings::class, ['isCircuitBreakerClosed' => true]);
-        $actions = $this->make(EventHandler::class);
+        $actions = $this->make(Handlers::class);
         $queue = new SqsQueue($config, $actions);
 
         $client = $this->make(SqsClient::class, ['receiveMessage' => Expected::never()]);
@@ -58,7 +58,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
             self::assertEquals('1.0.0', $headers->version);
         };
 
-        $actions = $this->make(EventHandler::class, ['triggerAction' => $triggerAction]);
+        $actions = $this->make(Handlers::class, ['triggerAction' => $triggerAction]);
         $queue = new SqsQueue($config, $actions);
 
         $this->messages[0]['MessageAttributes'] = [
@@ -78,7 +78,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
             self::assertEquals((object)[], $headers);
         };
 
-        $actions = $this->make(EventHandler::class, ['triggerAction' => $triggerAction]);
+        $actions = $this->make(Handlers::class, ['triggerAction' => $triggerAction]);
         $queue = new SqsQueue($config, $actions);
 
         $result = $this->make(Result::class, ['get' => $this->messages]);
@@ -90,7 +90,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
     public function testCaseWhereNoMessagesWereReceived()
     {
         $config = $this->make(Settings::class);
-        $actions = $this->make(EventHandler::class, ['triggerAction' => Expected::never()]);
+        $actions = $this->make(Handlers::class, ['triggerAction' => Expected::never()]);
         $queue = new SqsQueue($config, $actions);
 
         $result = $this->make(Result::class, ['get' => null]);
@@ -106,7 +106,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
             self::assertEquals('john', $body->name);
         };
 
-        $actions = $this->make(EventHandler::class, ['triggerAction' => $triggerAction]);
+        $actions = $this->make(Handlers::class, ['triggerAction' => $triggerAction]);
         $queue = new SqsQueue($config, $actions);
 
         $this->messages[0]['Body'] = '{"name":"john"}';
@@ -123,7 +123,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
             self::assertEquals((object)[], $body);
         };
 
-        $actions = $this->make(EventHandler::class, ['triggerAction' => $triggerAction]);
+        $actions = $this->make(Handlers::class, ['triggerAction' => $triggerAction]);
         $queue = new SqsQueue($config, $actions);
 
         $result = $this->make(Result::class, ['get' => $this->messages]);

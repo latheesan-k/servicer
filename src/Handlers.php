@@ -6,7 +6,7 @@ use MVF\Servicer\Actions\ActionBuilderFacade;
 use MVF\Servicer\Actions\ActionMockA;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class EventHandler extends ConsoleOutput implements EventInterface
+class Handlers extends ConsoleOutput implements EventInterface
 {
     const MOCK = ActionMockA::class;
 
