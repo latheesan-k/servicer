@@ -12,7 +12,7 @@ use AspectMock\Test;
 use Aws\Result;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
-use MVF\Servicer\Config;
+use MVF\Servicer\Settings;
 use MVF\Servicer\EventHandler;
 use MVF\Servicer\Queues\SqsQueue;
 
@@ -34,7 +34,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatTheGetEventsReturnsTheInjectedEventsObject()
     {
-        $config = $this->makeEmpty(Config::class);
+        $config = $this->makeEmpty(Settings::class);
         $actions = $this->make(EventHandler::class);
         $queue = new SqsQueue($config, $actions);
         self::assertEquals($actions, $queue->getEvents());
@@ -42,7 +42,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testCircuitBreakerWorks()
     {
-        $config = $this->makeEmpty(Config::class, ['isCircuitBreakerClosed' => true]);
+        $config = $this->makeEmpty(Settings::class, ['isCircuitBreakerClosed' => true]);
         $actions = $this->make(EventHandler::class);
         $queue = new SqsQueue($config, $actions);
 
@@ -53,7 +53,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatHeadersArePassedToAction()
     {
-        $config = $this->make(Config::class);
+        $config = $this->make(Settings::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals('1.0.0', $headers->version);
         };
@@ -73,7 +73,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatEmptyHeadersAreAlwaysPassedToAction()
     {
-        $config = $this->make(Config::class);
+        $config = $this->make(Settings::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals((object)[], $headers);
         };
@@ -89,7 +89,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testCaseWhereNoMessagesWereReceived()
     {
-        $config = $this->make(Config::class);
+        $config = $this->make(Settings::class);
         $actions = $this->make(EventHandler::class, ['triggerAction' => Expected::never()]);
         $queue = new SqsQueue($config, $actions);
 
@@ -101,7 +101,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatBodyIsPassedToAction()
     {
-        $config = $this->make(Config::class);
+        $config = $this->make(Settings::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals('john', $body->name);
         };
@@ -118,7 +118,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatEmptyBodyIsAlwaysPassedToAction()
     {
-        $config = $this->make(Config::class);
+        $config = $this->make(Settings::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals((object)[], $body);
         };

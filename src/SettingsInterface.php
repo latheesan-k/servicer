@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer;
 
-interface ConfigInterface
+interface SettingsInterface
 {
     public function getName(): string;
 

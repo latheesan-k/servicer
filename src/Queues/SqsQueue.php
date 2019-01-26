@@ -9,7 +9,7 @@
 namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
-use MVF\Servicer\ConfigInterface;
+use MVF\Servicer\SettingsInterface;
 use MVF\Servicer\EventInterface;
 use MVF\Servicer\QueueInterface;
 use function Functional\each;
@@ -28,19 +28,19 @@ class SqsQueue implements QueueInterface
      */
     private $events;
     /**
-     * @var ConfigInterface
+     * @var SettingsInterface
      */
-    private $config;
+    private $settings;
 
-    public function __construct(ConfigInterface $config, EventInterface $events)
+    public function __construct(SettingsInterface $settings, EventInterface $events)
     {
-        $this->config = $config;
+        $this->settings = $settings;
         $this->events = $events;
     }
 
     public function listen(): void
     {
-        if ($this->config->isCircuitBreakerClosed()) {
+        if ($this->settings->isCircuitBreakerClosed()) {
             return;
         }
 
@@ -94,7 +94,7 @@ class SqsQueue implements QueueInterface
 
     private function getSqsUrl(): string
     {
-        return getenv('SQS_URL') . $this->config->getName();
+        return getenv('SQS_URL') . $this->settings->getName();
     }
 
     private function getMessageHeaders(array $message): \stdClass

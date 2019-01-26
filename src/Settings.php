@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer;
 
-abstract class Config implements ConfigInterface
+abstract class Settings implements SettingsInterface
 {
     abstract public function getName(): string;
 
