@@ -12,5 +12,5 @@ namespace MVF\Servicer;
 interface ConfigInterface
 {
     function getSettings(): SettingsInterface;
-    function getHandlers(): HandlersInterface;
+    function getEvents(): EventsInterface;
 }

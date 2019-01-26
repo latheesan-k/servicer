@@ -9,11 +9,14 @@
 namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
+use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\SettingsInterface;
 use MVF\Servicer\EventsInterface;
 use MVF\Servicer\QueueInterface;
 use function Functional\each;
 use function Functional\map;
+use function GuzzleHttp\json_encode;
+use function GuzzleHttp\json_decode;
 
 class SqsQueue implements QueueInterface
 {
@@ -32,10 +35,10 @@ class SqsQueue implements QueueInterface
      */
     private $settings;
 
-    public function __construct(SettingsInterface $settings, EventsInterface $events)
+    public function __construct(ConfigInterface $config)
     {
-        $this->settings = $settings;
-        $this->events = $events;
+        $this->settings = $config->getSettings();
+        $this->events = $config->getEvents();
     }
 
     public function listen(): void
@@ -98,9 +101,9 @@ class SqsQueue implements QueueInterface
             $messageAttributes = $message['MessageAttributes'];
             $keys = map($messageAttributes, $this->attributesToLowercase());
             $values = map($messageAttributes, $this->attributesToValues());
-            $json = \GuzzleHttp\json_encode(array_combine($keys, $values));
+            $json = json_encode(array_combine($keys, $values));
 
-            return \GuzzleHttp\json_decode($json);
+            return json_decode($json);
         }
 
         return (object)[];
