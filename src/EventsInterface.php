@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer;
 
-interface EventInterface
+interface EventsInterface
 {
     public function triggerAction(\stdClass $headers, \stdClass $body): void;
 }

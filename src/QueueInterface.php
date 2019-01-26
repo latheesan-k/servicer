@@ -11,6 +11,4 @@ namespace MVF\Servicer;
 interface QueueInterface
 {
     public function listen(): void;
-
-    public function getEvents(): EventInterface;
 }

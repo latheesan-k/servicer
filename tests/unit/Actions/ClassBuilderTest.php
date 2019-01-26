@@ -7,7 +7,7 @@ use MVF\Servicer\Actions\ActionMockA;
 use MVF\Servicer\Actions\ActionMockB;
 use MVF\Servicer\Actions\ClassBuilder;
 use MVF\Servicer\Actions\Constant;
-use MVF\Servicer\UndefinedAction;
+use MVF\Servicer\UndefinedEvent;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ClassBuilderTest extends \Codeception\Test\Unit
@@ -29,7 +29,7 @@ class ClassBuilderTest extends \Codeception\Test\Unit
 
     public function testClassBuilderReturnsUndefinedActionObject()
     {
-        self::assertInstanceOf(UndefinedAction::class, $this->builder->buildActionFor('UNDEFINED'));
+        self::assertInstanceOf(UndefinedEvent::class, $this->builder->buildActionFor('UNDEFINED'));
     }
 
     public function testClassBuilderReturnsSomeConstructedObject()

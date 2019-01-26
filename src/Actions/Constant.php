@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer\Actions;
 
-use MVF\Servicer\UndefinedAction;
+use MVF\Servicer\UndefinedEvent;
 
 class Constant
 {
@@ -16,6 +16,6 @@ class Constant
             return constant($event);
         }
 
-        return UndefinedAction::class;
+        return UndefinedEvent::class;
     }
 }

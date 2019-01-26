@@ -4,5 +4,5 @@ namespace MVF\Servicer;
 
 interface HandlersInterface
 {
-    public function getHandler(string $queue): string;
+    public function getHandlerClass(string $queue): string;
 }

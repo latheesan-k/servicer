@@ -10,7 +10,7 @@ namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\SettingsInterface;
-use MVF\Servicer\EventInterface;
+use MVF\Servicer\EventsInterface;
 use MVF\Servicer\QueueInterface;
 use function Functional\each;
 use function Functional\map;
@@ -24,7 +24,7 @@ class SqsQueue implements QueueInterface
     ];
 
     /**
-     * @var EventInterface
+     * @var EventsInterface
      */
     private $events;
     /**
@@ -32,7 +32,7 @@ class SqsQueue implements QueueInterface
      */
     private $settings;
 
-    public function __construct(SettingsInterface $settings, EventInterface $events)
+    public function __construct(SettingsInterface $settings, EventsInterface $events)
     {
         $this->settings = $settings;
         $this->events = $events;
@@ -45,11 +45,6 @@ class SqsQueue implements QueueInterface
         }
 
         each($this->receiveMessages(), $this->handleMessages());
-    }
-
-    public function getEvents(): EventInterface
-    {
-        return $this->events;
     }
 
     private function handleMessages(): callable

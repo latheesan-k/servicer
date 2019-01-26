@@ -4,18 +4,18 @@ namespace MVF\Servicer\Action\Tests;
 
 use MVF\Servicer\Actions\ActionMockA;
 use MVF\Servicer\Actions\Constant;
-use MVF\Servicer\Handlers;
-use MVF\Servicer\UndefinedAction;
+use MVF\Servicer\Events;
+use MVF\Servicer\UndefinedEvent;
 
 class ConstantsTest extends \Codeception\Test\Unit
 {
     public function testShouldReturnValueIfConstantIsDefined()
     {
-        self::assertEquals(ActionMockA::class, Constant::getAction(Handlers::class . '::MOCK'));
+        self::assertEquals(ActionMockA::class, Constant::getAction(Events::class . '::MOCK'));
     }
 
     public function testShouldReturnUndefinedActionIfConstantIsNotDefined()
     {
-        self::assertEquals(UndefinedAction::class, Constant::getAction(Handlers::class . '::TEST'));
+        self::assertEquals(UndefinedEvent::class, Constant::getAction(Events::class . '::TEST'));
     }
 }

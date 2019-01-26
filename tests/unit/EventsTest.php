@@ -5,10 +5,10 @@ namespace MVF\Servicer\Tests;
 use AspectMock\Test;
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\ActionBuilderFacade;
-use MVF\Servicer\Handlers;
-use MVF\Servicer\UndefinedAction;
+use MVF\Servicer\Events;
+use MVF\Servicer\UndefinedEvent;
 
-class EventHandlerTest extends \Codeception\Test\Unit
+class EventsTest extends \Codeception\Test\Unit
 {
     public function _after()
     {
@@ -20,13 +20,13 @@ class EventHandlerTest extends \Codeception\Test\Unit
         $test = function (string $message) {
             $this->assertContains('Event is not defined', $message);
         };
-        $action = $this->make(UndefinedAction::class, ['writeln' => $test]);
+        $action = $this->make(UndefinedEvent::class, ['writeln' => $test]);
         $buildActionFor = function () use ($action) {
             return $action;
         };
         Test::double(ActionBuilderFacade::class, ['buildActionFor' => $buildActionFor]);
 
-        $handler = $this->make(Handlers::class);
+        $handler = $this->make(Events::class);
         $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
     }
 
@@ -41,7 +41,7 @@ class EventHandlerTest extends \Codeception\Test\Unit
         $test = function (string $message) {
             $this->assertContains('Event processed', $message);
         };
-        $handler = $this->make(Handlers::class, ['writeln' => $test]);
+        $handler = $this->make(Events::class, ['writeln' => $test]);
 
         $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
     }

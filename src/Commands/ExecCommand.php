@@ -20,16 +20,16 @@ class ExecCommand extends Command
     /**
      * @var HandlersInterface
      */
-    private $eventHandlers;
+    private $handlers;
 
     /**
-     * DaemonCommand constructor.
+     * ExecCommand constructor.
      *
-     * @param HandlersInterface $eventHandlers
+     * @param HandlersInterface $handlers
      */
-    public function __construct(HandlersInterface $eventHandlers)
+    public function __construct(HandlersInterface $handlers)
     {
-        $this->eventHandlers = $eventHandlers;
+        $this->handlers = $handlers;
         parent::__construct();
     }
 
@@ -73,7 +73,7 @@ class ExecCommand extends Command
         $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
 
         $queue = $input->getArgument(self::QUEUE);
-        $eventHandlerClass = $this->eventHandlers->getHandler($queue);
+        $eventHandlerClass = $this->handlers->getHandlerClass($queue);
 
         $action = ActionBuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
         $action->handle($headers, $body);
