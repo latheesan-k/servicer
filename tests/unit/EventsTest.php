@@ -4,7 +4,7 @@ namespace MVF\Servicer\Tests;
 
 use AspectMock\Test;
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\Actions\ActionBuilderFacade;
+use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Events;
 use MVF\Servicer\UndefinedEvent;
 
@@ -24,7 +24,7 @@ class EventsTest extends \Codeception\Test\Unit
         $buildActionFor = function () use ($action) {
             return $action;
         };
-        Test::double(ActionBuilderFacade::class, ['buildActionFor' => $buildActionFor]);
+        Test::double(BuilderFacade::class, ['buildActionFor' => $buildActionFor]);
 
         $handler = $this->make(Events::class);
         $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
@@ -36,7 +36,7 @@ class EventsTest extends \Codeception\Test\Unit
         $buildActionFor = function () use ($action) {
             return $action;
         };
-        Test::double(ActionBuilderFacade::class, ['buildActionFor' => $buildActionFor]);
+        Test::double(BuilderFacade::class, ['buildActionFor' => $buildActionFor]);
 
         $test = function (string $message) {
             $this->assertContains('Event processed', $message);

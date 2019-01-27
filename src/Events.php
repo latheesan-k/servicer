@@ -2,8 +2,8 @@
 
 namespace MVF\Servicer;
 
-use MVF\Servicer\Actions\ActionBuilderFacade;
 use MVF\Servicer\Actions\ActionMockA;
+use MVF\Servicer\Actions\BuilderFacade;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function GuzzleHttp\json_encode;
 
@@ -16,7 +16,7 @@ class Events extends ConsoleOutput implements EventsInterface
     public function triggerAction(\stdClass $headers, \stdClass $body): void
     {
         $source = static::class . '::' . $headers->event;
-        $action = ActionBuilderFacade::buildActionFor($source);
+        $action = BuilderFacade::buildActionFor($source);
 
         if ($action instanceof UndefinedEvent) {
             $this->eventHandled(self::__UNDEFINED__, $headers, $body);

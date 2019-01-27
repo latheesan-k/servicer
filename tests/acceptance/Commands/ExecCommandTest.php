@@ -4,10 +4,11 @@ namespace MVF\Servicer\Tests;
 
 use AspectMock\Test;
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\Actions\ActionBuilderFacade;
+use MVF\Servicer\Actions\BuilderFacade;
+use MVF\Servicer\Builder;
+use MVF\Servicer\BuilderInterface;
 use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\Events;
-use MVF\Servicer\HandlersInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExecCommandTest extends \Codeception\Test\Unit
@@ -24,35 +25,31 @@ class ExecCommandTest extends \Codeception\Test\Unit
         };
 
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
-        Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
+        Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $this->makeEmpty(
-            HandlersInterface::class,
-            ['getEventHandler' => Events::class]
+            BuilderInterface::class,
+            ['getHandlerClass' => Events::class]
         );
 
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
-        $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => 'MOCK']);
+        $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
     }
 
     public function testThatDefaultHeadersArePassedToTheAction()
     {
         $handle = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals('MOCK', $headers->event);
+            self::assertEquals('__MOCK__', $headers->event);
         };
 
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
-        Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
+        Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $this->makeEmpty(
-            HandlersInterface::class,
-            ['getEventHandler' => Events::class]
-        );
-
+        $eventHandlers = $this->make(Builder::class);
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
-        $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => 'MOCK']);
+        $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
     }
 
     public function testThatOptionalHeadersArePassedToTheAction()
@@ -62,15 +59,11 @@ class ExecCommandTest extends \Codeception\Test\Unit
         };
 
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
-        Test::double(ActionBuilderFacade::class, ['buildActionFor' => $action]);
+        Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $this->makeEmpty(
-            HandlersInterface::class,
-            ['getEventHandler' => Events::class]
-        );
-
+        $eventHandlers = $this->make(Builder::class);
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
-        $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => 'MOCK', '-H' => ['name=john']]);
+        $tester->execute([ExecCommand::QUEUE => '__MOCK__', ExecCommand::ACTION => '__MOCK__', '-H' => ['name=john']]);
     }
 }

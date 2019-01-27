@@ -25,6 +25,6 @@ class ActionMockB implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        $this->output->writeln("test");
+        $this->output->writeln('test');
     }
 }

@@ -3,12 +3,12 @@
 namespace MVF\Servicer\Action\Tests;
 
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\Actions\ActionBuilderFacade;
+use MVF\Servicer\Actions\BuilderFacade;
 
 class ActionBuilderFacadeTest extends \Codeception\Test\Unit
 {
     public function testActionBuilderReturnsSomeAction()
     {
-        self::assertInstanceOf(ActionInterface::class, ActionBuilderFacade::buildActionFor('TEST'));
+        self::assertInstanceOf(ActionInterface::class, BuilderFacade::buildActionFor('TEST'));
     }
 }

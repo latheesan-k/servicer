@@ -18,4 +18,17 @@ class Constant
 
         return UndefinedEvent::class;
     }
+
+    /**
+     * @param  string $queue
+     * @return string
+     */
+    public static function getBuilderFor(string $queue): string
+    {
+        if (defined($queue) === true) {
+            return constant($queue);
+        }
+
+        return '';
+    }
 }

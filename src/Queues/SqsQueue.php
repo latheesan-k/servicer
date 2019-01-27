@@ -10,13 +10,13 @@ namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
-use MVF\Servicer\SettingsInterface;
 use MVF\Servicer\EventsInterface;
 use MVF\Servicer\QueueInterface;
+use MVF\Servicer\SettingsInterface;
 use function Functional\each;
 use function Functional\map;
-use function GuzzleHttp\json_encode;
 use function GuzzleHttp\json_decode;
+use function GuzzleHttp\json_encode;
 
 class SqsQueue implements QueueInterface
 {

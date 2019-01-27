@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer;
 
-interface HandlersInterface
+interface BuilderInterface
 {
     public function getHandlerClass(string $queue): string;
 }

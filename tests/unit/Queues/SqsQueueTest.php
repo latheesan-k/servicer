@@ -13,9 +13,9 @@ use Aws\Result;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
-use MVF\Servicer\Settings;
 use MVF\Servicer\Events;
 use MVF\Servicer\Queues\SqsQueue;
+use MVF\Servicer\Settings;
 
 class SqsQueueTest extends \Codeception\Test\Unit
 {

@@ -15,6 +15,6 @@ class ActionMockA extends ConsoleOutput implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        $this->writeln("test");
+        $this->writeln('test');
     }
 }

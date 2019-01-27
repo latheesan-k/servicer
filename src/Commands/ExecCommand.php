@@ -2,8 +2,8 @@
 
 namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\Actions\ActionBuilderFacade;
-use MVF\Servicer\HandlersInterface;
+use MVF\Servicer\Actions\BuilderFacade;
+use MVF\Servicer\BuilderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,16 +18,16 @@ class ExecCommand extends Command
     const BODY = 'body';
 
     /**
-     * @var HandlersInterface
+     * @var BuilderInterface
      */
     private $handlers;
 
     /**
      * ExecCommand constructor.
      *
-     * @param HandlersInterface $handlers
+     * @param BuilderInterface $handlers
      */
-    public function __construct(HandlersInterface $handlers)
+    public function __construct(BuilderInterface $handlers)
     {
         $this->handlers = $handlers;
         parent::__construct();
@@ -74,8 +74,7 @@ class ExecCommand extends Command
 
         $queue = $input->getArgument(self::QUEUE);
         $eventHandlerClass = $this->handlers->getHandlerClass($queue);
-
-        $action = ActionBuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
+        $action = BuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
         $action->handle($headers, $body);
     }
 
