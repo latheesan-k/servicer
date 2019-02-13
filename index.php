@@ -42,9 +42,9 @@ class Settings implements \MVF\Servicer\SettingsInterface
         return false;
     }
 
-    public function isOldMessage(int $timestamp, \stdClass $headers): bool
+    public function isOldMessage(int $timestamp, \stdClass $headers, callable $consumeMessage): void
     {
-        return false;
+        $consumeMessage();
     }
 }
 

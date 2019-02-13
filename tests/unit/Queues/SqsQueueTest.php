@@ -134,8 +134,9 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatActionIsNotTriggeredIfEventIsOld()
     {
-        $settings = $this->makeEmpty(SettingsInterface::class, ['isOldMessage' => true]);
-        $events = $this->make(Events::class, ['triggerAction' => Expected::never()]);
+        $isOldMessage = function ($a, $b, callable $consumeMessage) { $consumeMessage(); };
+        $settings = $this->makeEmpty(SettingsInterface::class, ['isOldMessage' => $isOldMessage]);
+        $events = $this->make(Events::class, ['triggerAction' => Expected::once()]);
         $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
 

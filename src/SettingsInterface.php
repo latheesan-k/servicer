@@ -8,5 +8,5 @@ interface SettingsInterface
 
     public function isCircuitBreakerClosed(): bool;
 
-    public function isOldMessage(int $timestamp, \stdClass $headers): bool;
+    public function isOldMessage(int $timestamp, \stdClass $headers, callable $consumeMessage): void;
 }

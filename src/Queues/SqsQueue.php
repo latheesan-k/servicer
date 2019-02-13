@@ -47,21 +47,25 @@ class SqsQueue implements QueueInterface
             return;
         }
 
-        each($this->receiveMessages(), $this->handleMessages());
+        each($this->receiveMessages(), $this->parsePayload());
     }
 
-    private function handleMessages(): callable
+    private function parsePayload(): callable
     {
         return function ($message) {
             $headers = $this->getMessageHeaders($message);
-            $timestamp = $message['Attributes']['SentTimestamp'];
-            if ($this->settings->isOldMessage($timestamp, $headers)) {
-                return;
-            }
-
             $body = $this->getMessageBody($message);
+            $timestamp = $message['Attributes']['SentTimestamp'];
+            $consumeMessage = $this->consumeMessage($headers, $body, $message['ReceiptHandle']);
+            $this->settings->isOldMessage($timestamp, $headers, $consumeMessage);
+        };
+    }
+
+    private function consumeMessage(\stdClass $headers, \stdClass $body, string $receiptHandle): callable
+    {
+        return function () use ($headers, $body, $receiptHandle) {
             $this->events->triggerAction($headers, $body);
-            $this->deleteMessage($message['ReceiptHandle']);
+            $this->deleteMessage($receiptHandle);
         };
     }
 
