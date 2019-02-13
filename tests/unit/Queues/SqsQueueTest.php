@@ -28,8 +28,9 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function _before()
     {
+        $attributes = ['SentTimestamp' => 0];
         $this->messages = [
-            ['ReceiptHandle' => 'test'],
+            ['ReceiptHandle' => 'test', 'Attributes' => $attributes],
         ];
     }
 
@@ -122,6 +123,19 @@ class SqsQueueTest extends \Codeception\Test\Unit
         };
 
         $events = $this->make(Events::class, ['triggerAction' => $triggerAction]);
+        $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+
+        $result = $this->make(Result::class, ['get' => $this->messages]);
+        $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
+        Test::double(SqsClient::class, ['instance' => $client]);
+        $queue->listen();
+    }
+
+    public function testThatActionIsNotTriggeredIfEventIsOld()
+    {
+        $settings = $this->makeEmpty(SettingsInterface::class, ['isOldMessage' => true]);
+        $events = $this->make(Events::class, ['triggerAction' => Expected::never()]);
         $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
 

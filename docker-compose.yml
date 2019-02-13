@@ -20,7 +20,7 @@ services:
     build: .
     container_name: servicer-coverage
     ports:
-      - 8000:80
+      - 7000:80
     volumes:
     - .:/code
     - ./tests/_output/coverage:/usr/share/nginx/html

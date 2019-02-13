@@ -54,6 +54,11 @@ class SqsQueue implements QueueInterface
     {
         return function ($message) {
             $headers = $this->getMessageHeaders($message);
+            $timestamp = $message['Attributes']['SentTimestamp'];
+            if ($this->settings->isOldMessage($timestamp, $headers)) {
+                return;
+            }
+
             $body = $this->getMessageBody($message);
             $this->events->triggerAction($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
