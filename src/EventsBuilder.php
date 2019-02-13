@@ -10,11 +10,11 @@ namespace MVF\Servicer;
 
 use MVF\Servicer\Actions\BuilderFacade;
 
-class Builder
+class EventsBuilder
 {
     const __MOCK__ = 'SomeObject';
 
-    public function getHandlerClass(string $queue): string
+    public function getClass(string $queue): string
     {
         $source = static::class . '::' . $queue;
 

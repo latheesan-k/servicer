@@ -3,7 +3,7 @@
 namespace MVF\Servicer\Commands;
 
 use MVF\Servicer\Actions\BuilderFacade;
-use MVF\Servicer\Builder;
+use MVF\Servicer\EventsBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,18 +18,18 @@ class ExecCommand extends Command
     const BODY = 'body';
 
     /**
-     * @var Builder
+     * @var EventsBuilder
      */
-    private $handlers;
+    private $eventsBuilder;
 
     /**
      * ExecCommand constructor.
      *
-     * @param Builder $handlers
+     * @param EventsBuilder $eventsBuilder
      */
-    public function __construct(Builder $handlers)
+    public function __construct(EventsBuilder $eventsBuilder)
     {
-        $this->handlers = $handlers;
+        $this->eventsBuilder = $eventsBuilder;
         parent::__construct();
     }
 
@@ -73,7 +73,7 @@ class ExecCommand extends Command
         $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
 
         $queue = $input->getArgument(self::QUEUE);
-        $eventHandlerClass = $this->handlers->getHandlerClass($queue);
+        $eventHandlerClass = $this->eventsBuilder->getClass($queue);
         $action = BuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
         $action->handle($headers, $body);
     }
