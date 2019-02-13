@@ -10,7 +10,7 @@ namespace MVF\Servicer;
 
 use MVF\Servicer\Actions\BuilderFacade;
 
-class Builder implements BuilderInterface
+class Builder
 {
     const __MOCK__ = 'SomeObject';
 

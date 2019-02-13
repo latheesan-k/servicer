@@ -3,7 +3,7 @@
 namespace MVF\Servicer\Commands;
 
 use MVF\Servicer\Actions\BuilderFacade;
-use MVF\Servicer\BuilderInterface;
+use MVF\Servicer\Builder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,16 +18,16 @@ class ExecCommand extends Command
     const BODY = 'body';
 
     /**
-     * @var BuilderInterface
+     * @var Builder
      */
     private $handlers;
 
     /**
      * ExecCommand constructor.
      *
-     * @param BuilderInterface $handlers
+     * @param Builder $handlers
      */
-    public function __construct(BuilderInterface $handlers)
+    public function __construct(Builder $handlers)
     {
         $this->handlers = $handlers;
         parent::__construct();
