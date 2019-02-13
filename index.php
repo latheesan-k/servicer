@@ -41,6 +41,11 @@ class Settings implements \MVF\Servicer\SettingsInterface
     {
         return false;
     }
+
+    public function isOldMessage(int $timestamp, \stdClass $headers): bool
+    {
+        return false;
+    }
 }
 
 class Config implements \MVF\Servicer\ConfigInterface
