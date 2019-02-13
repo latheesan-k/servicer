@@ -12,5 +12,5 @@ interface ConfigInterface
 {
     public function getSettings(): SettingsInterface;
 
-    public function getEvents(): EventsInterface;
+    public function getEvents(): Events;
 }

@@ -7,7 +7,7 @@ use MVF\Servicer\Actions\BuilderFacade;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function GuzzleHttp\json_encode;
 
-class Events extends ConsoleOutput implements EventsInterface
+class Events extends ConsoleOutput
 {
     const __MOCK__ = ActionMockA::class;
     const __UNDEFINED__ = 'Event is not defined: ';

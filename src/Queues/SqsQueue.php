@@ -10,9 +10,9 @@ namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
-use MVF\Servicer\EventsInterface;
 use MVF\Servicer\QueueInterface;
 use MVF\Servicer\SettingsInterface;
+use MVF\Servicer\Events;
 use function Functional\each;
 use function Functional\map;
 use function GuzzleHttp\json_decode;
@@ -27,7 +27,7 @@ class SqsQueue implements QueueInterface
     ];
 
     /**
-     * @var EventsInterface
+     * @var Events
      */
     private $events;
     /**

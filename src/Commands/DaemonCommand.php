@@ -20,7 +20,7 @@ class DaemonCommand extends Command
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface ...$queues
+     * @param QueueInterface[] $queues
      */
     public function __construct(QueueInterface ...$queues)
     {
