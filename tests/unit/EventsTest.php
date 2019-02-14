@@ -32,10 +32,10 @@ class EventsTest extends \Codeception\Test\Unit
 
     public function testBuildActionReturnsValidAction()
     {
-        $isOldMessage = function ($timestamp, $headers, $consumeMessage) {
+        $skipMessage = function ($timestamp, $headers, $consumeMessage) {
             $consumeMessage();
         };
-        $action = $this->makeEmpty(ActionInterface::class, ['isOldMessage' => $isOldMessage]);
+        $action = $this->makeEmpty(ActionInterface::class, ['skipMessage' => $skipMessage]);
         $buildActionFor = function () use ($action) {
             return $action;
         };

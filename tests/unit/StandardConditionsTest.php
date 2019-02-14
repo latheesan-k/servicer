@@ -15,7 +15,7 @@ class StandardConditionsTest extends \Codeception\Test\Unit
         };
 
         $action = $this->make(StandardConditions::class);
-        $action->isOldMessage(0, (object)[], $consumeMessage);
+        $action->skipMessage(0, (object)[], $consumeMessage);
         self::assertEquals(true, $this->wasCalled);
     }
 }

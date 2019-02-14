@@ -11,7 +11,7 @@ abstract class StandardConditions implements ActionInterface
      * @param \stdClass $headers
      * @param callable  $consumeMessage
      */
-    public function isOldMessage(int $timestamp, \stdClass $headers, callable $consumeMessage): void
+    public function skipMessage(int $timestamp, \stdClass $headers, callable $consumeMessage): void
     {
         $consumeMessage();
     }
