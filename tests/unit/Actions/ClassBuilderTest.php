@@ -56,11 +56,10 @@ class ClassBuilderTest extends \Codeception\Test\Unit
 
     public function testThatThereIsAWayToDefineInstanceObjectsForSpecificClasses()
     {
-        $consoleOutput = $this->make(ActionMockA::class, ['writeln' => Expected::once()]);
-        ClassBuilder::setInstance(ActionMockA::class, $consoleOutput);
-
+        ClassBuilder::setInstance(ActionMockA::class, new ActionMockA());
         Test::double(Constant::class, ['getAction' => ActionMockA::class]);
         $action = $this->builder->buildActionFor('TEST');
+        $this->expectExceptionMessage('action_mock_a');
         $action->handle((object)[], (object)[]);
     }
 

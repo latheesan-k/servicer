@@ -10,9 +10,9 @@ namespace MVF\Servicer\Queues;
 
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
+use MVF\Servicer\Events;
 use MVF\Servicer\QueueInterface;
 use MVF\Servicer\SettingsInterface;
-use MVF\Servicer\Events;
 use function Functional\each;
 use function Functional\map;
 use function GuzzleHttp\json_decode;
@@ -56,16 +56,17 @@ class SqsQueue implements QueueInterface
             $headers = $this->getMessageHeaders($message);
             $body = $this->getMessageBody($message);
             $timestamp = $message['Attributes']['SentTimestamp'];
-            $consumeMessage = $this->consumeMessage($headers, $body, $message['ReceiptHandle']);
+            $consumeMessage = $this->consumeMessage($headers, $body, $message);
             $this->settings->isOldMessage($timestamp, $headers, $consumeMessage);
         };
     }
 
-    private function consumeMessage(\stdClass $headers, \stdClass $body, string $receiptHandle): callable
+    private function consumeMessage(\stdClass $headers, \stdClass $body, $message): callable
     {
-        return function () use ($headers, $body, $receiptHandle) {
-            $this->events->triggerAction($headers, $body);
-            $this->deleteMessage($receiptHandle);
+        return function () use ($headers, $body, $message) {
+            $timestamp = $message['Attributes']['SentTimestamp'];
+            $this->events->triggerAction($timestamp, $headers, $body);
+            $this->deleteMessage($message['ReceiptHandle']);
         };
     }
 

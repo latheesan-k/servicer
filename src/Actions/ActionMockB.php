@@ -3,9 +3,10 @@
 namespace MVF\Servicer\Actions;
 
 use MVF\Servicer\ActionInterface;
+use MVF\Servicer\StandardConditions;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class ActionMockB implements ActionInterface
+class ActionMockB extends StandardConditions implements ActionInterface
 {
     /**
      * @var ConsoleOutput

@@ -27,7 +27,7 @@ class EventsTest extends \Codeception\Test\Unit
         Test::double(BuilderFacade::class, ['buildActionFor' => $buildActionFor]);
 
         $handler = $this->make(Events::class);
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(0, (object)['event' => 'TEST'], (object)[]);
     }
 
     public function testBuildActionReturnsValidAction()
@@ -43,6 +43,6 @@ class EventsTest extends \Codeception\Test\Unit
         };
         $handler = $this->make(Events::class, ['writeln' => $test]);
 
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(0, (object)['event' => 'TEST'], (object)[]);
     }
 }

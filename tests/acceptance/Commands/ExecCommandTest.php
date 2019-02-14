@@ -5,9 +5,9 @@ namespace MVF\Servicer\Tests;
 use AspectMock\Test;
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
-use MVF\Servicer\EventsBuilder;
 use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\Events;
+use MVF\Servicer\EventsBuilder;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExecCommandTest extends \Codeception\Test\Unit
