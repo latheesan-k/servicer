@@ -16,7 +16,7 @@ class DaemonCommand extends Command
      * @var QueueInterface[]
      */
     private $queues;
-    private $delay = 1000000;
+    private $delay = 100000;
 
     /**
      * DaemonCommand constructor.
