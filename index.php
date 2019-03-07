@@ -5,7 +5,7 @@ include __DIR__.'/vendor/autoload.php';
 use MVF\Servicer\Commands\ExecCommand;
 use Symfony\Component\Console\Application;
 
-class TestAction implements \MVF\Servicer\ActionInterface
+class TestAction extends \MVF\Servicer\StandardConditions
 {
     /**
      * Executes the action.
