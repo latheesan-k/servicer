@@ -17,6 +17,7 @@ use MVF\Servicer\Queues\PayloadParsers\SqsStandardPayloadParser;
 use MVF\Servicer\SettingsInterface;
 use function Functional\each;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class SqsQueue implements QueueInterface
 {
@@ -29,7 +30,7 @@ class SqsQueue implements QueueInterface
      */
     private $settings;
     /**
-     * @var ConsoleOutput
+     * @var StreamOutput
      */
     private $output;
 
@@ -37,6 +38,7 @@ class SqsQueue implements QueueInterface
     {
         $this->settings = $config->getSettings();
         $this->events = $config->getEvents();
+        $this->output = new ConsoleOutput();
     }
 
     public function listen(): void
@@ -52,7 +54,7 @@ class SqsQueue implements QueueInterface
         each($this->receiveMessages(), $this->parsePayload());
     }
 
-    public function setConsoleOutput(ConsoleOutput $output)
+    public function setConsoleOutput(StreamOutput $output)
     {
         $this->output = $output;
     }

@@ -150,7 +150,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatMessagesFromSNSHaveCorrectHeaders()
     {
-        $settings = $this->make(SettingsInterface::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals("twitter", $headers->platform);
         };
@@ -172,7 +172,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatMessagesFromSNSHaveCorrectBody()
     {
-        $settings = $this->make(SettingsInterface::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals("hola", $body->message);
         };
