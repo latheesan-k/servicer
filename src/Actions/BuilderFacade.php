@@ -6,11 +6,27 @@ use MVF\Servicer\ActionInterface;
 
 class BuilderFacade
 {
+    /**
+     * Creates an action class for the specified event.
+     *
+     * @param string $event Action class name
+     *
+     * @return ActionInterface
+     */
     public static function buildActionFor(string $event): ActionInterface
     {
-        return (new ClassBuilder())->buildActionFor($event);
+        $builder = new ClassBuilder();
+
+        return $builder->buildActionFor($event);
     }
 
+    /**
+     * Gets the name of he events class.
+     *
+     * @param string $queue The name of the queue
+     *
+     * @return string
+     */
     public static function getEventsClass(string $queue): string
     {
         return Constant::getBuilderFor($queue);
