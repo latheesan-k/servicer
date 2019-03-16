@@ -152,7 +152,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
     {
         $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals("twitter", $headers->platform);
+            self::assertEquals('twitter', $headers->platform);
         };
 
         $events = $this->make(Events::class, ['triggerAction' => $triggerAction]);
@@ -160,8 +160,8 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $queue = new SqsQueue($config);
 
         $this->messages[0]['Body'] = [
-            "Type" => "Notification",
-            "MessageAttributes" => ["platform" => ["Type" => "String", "Value" => "twitter"]],
+            'Type' => 'Notification',
+            'MessageAttributes' => ['platform' => ['Type' => 'String', 'Value' => 'twitter']],
         ];
 
         $result = $this->make(Result::class, ['get' => $this->messages]);
@@ -174,7 +174,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
     {
         $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals("hola", $body->message);
+            self::assertEquals('hola', $body->message);
         };
 
         $events = $this->make(Events::class, ['triggerAction' => $triggerAction]);
@@ -182,8 +182,8 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $queue = new SqsQueue($config);
 
         $this->messages[0]['Body'] = [
-            "Type" => "Notification",
-            "Message" => '{"message": "hola"}',
+            'Type' => 'Notification',
+            'Message' => '{"message": "hola"}',
         ];
 
         $result = $this->make(Result::class, ['get' => $this->messages]);

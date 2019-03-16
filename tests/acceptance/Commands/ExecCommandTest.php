@@ -7,7 +7,7 @@ use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\Events;
-use MVF\Servicer\EventsBuilder;
+use MVF\Servicer\Queues;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExecCommandTest extends \Codeception\Test\Unit
@@ -26,7 +26,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $this->make(EventsBuilder::class, ['getHandlerClass' => Events::class]);
+        $eventHandlers = $this->make(Queues::class, ['getHandlerClass' => Events::class]);
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
@@ -41,7 +41,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $this->make(EventsBuilder::class);
+        $eventHandlers = $this->make(Queues::class);
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
@@ -56,7 +56,7 @@ class ExecCommandTest extends \Codeception\Test\Unit
         $action = $this->makeEmpty(ActionInterface::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $this->make(EventsBuilder::class);
+        $eventHandlers = $this->make(Queues::class);
         $consumer = $this->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => '__MOCK__', ExecCommand::ACTION => '__MOCK__', '-H' => ['name=john']]);

@@ -3,14 +3,14 @@
  * Created by PhpStorm.
  * User: drupsys
  * Date: 16/03/19
- * Time: 20:30
+ * Time: 20:30.
  */
 
 namespace MVF\Servicer\Queues\PayloadParsers;
 
+use function Functional\map;
 use function GuzzleHttp\json_decode;
 use function GuzzleHttp\json_encode;
-use function Functional\map;
 
 class SqsStandardPayloadParser
 {

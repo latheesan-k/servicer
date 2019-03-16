@@ -10,7 +10,7 @@ namespace MVF\Servicer;
 
 use MVF\Servicer\Actions\BuilderFacade;
 
-class EventsBuilder
+class Queues
 {
     const __MOCK__ = 'SomeObject';
 

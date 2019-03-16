@@ -2,7 +2,7 @@ version: '3'
 services:
   package:
     image: drupsys/php-package-alpine
-    container_name: servicer
+    container_name: servicer-package
     volumes:
     - .:/app
 

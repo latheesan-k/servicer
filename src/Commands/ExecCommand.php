@@ -3,7 +3,7 @@
 namespace MVF\Servicer\Commands;
 
 use MVF\Servicer\Actions\BuilderFacade;
-use MVF\Servicer\EventsBuilder;
+use MVF\Servicer\Queues;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,18 +18,20 @@ class ExecCommand extends Command
     const BODY = 'body';
 
     /**
-     * @var EventsBuilder
+     * Allows the execute command to build the right events class for the specified queue.
+     *
+     * @var Queues builder
      */
-    private $eventsBuilder;
+    private $queues;
 
     /**
      * ExecCommand constructor.
      *
-     * @param EventsBuilder $eventsBuilder
+     * @param Queues $queues Builder
      */
-    public function __construct(EventsBuilder $eventsBuilder)
+    public function __construct(Queues $queues)
     {
-        $this->eventsBuilder = $eventsBuilder;
+        $this->queues = $queues;
         parent::__construct();
     }
 
@@ -41,8 +43,18 @@ class ExecCommand extends Command
         $this->setName('exec');
         $this->setDescription('Run specified action');
         $this->setHelp('Not implemented');
-        $this->addArgument(self::QUEUE, InputArgument::REQUIRED, 'The queue where the event handler is defined');
-        $this->addArgument(self::ACTION, InputArgument::REQUIRED, 'The action to be executed');
+
+        $this->addArgument(
+            self::QUEUE,
+            InputArgument::REQUIRED,
+            'The queue where the event handler is defined'
+        );
+
+        $this->addArgument(
+            self::ACTION,
+            InputArgument::REQUIRED,
+            'The action to be executed'
+        );
 
         $this->addOption(
             self::HEADERS,
@@ -73,11 +85,17 @@ class ExecCommand extends Command
         $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
 
         $queue = $input->getArgument(self::QUEUE);
-        $eventHandlerClass = $this->eventsBuilder->getClass($queue);
-        $action = BuilderFacade::buildActionFor($eventHandlerClass . '::' . $headers->event);
+        $queueClass = $this->queues->getClass($queue);
+        $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers->event);
         $action->handle($headers, $body);
     }
 
+    /**
+     * Converts input header options to an object.
+     *
+     * @param  InputInterface $input Command line inputs
+     * @return \stdClass
+     */
     private function getHeaders(InputInterface $input): \stdClass
     {
         $headers = (object)[];

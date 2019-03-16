@@ -15,9 +15,9 @@ use MVF\Servicer\QueueInterface;
 use MVF\Servicer\Queues\PayloadParsers\SqsSnsPayloadParser;
 use MVF\Servicer\Queues\PayloadParsers\SqsStandardPayloadParser;
 use MVF\Servicer\SettingsInterface;
-use function Functional\each;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
+use function Functional\each;
 
 class SqsQueue implements QueueInterface
 {
@@ -45,7 +45,7 @@ class SqsQueue implements QueueInterface
     {
         if ($this->settings->isCircuitBreakerClosed()) {
             if ($this->output->isDebug()) {
-                $this->output->writeln("DEBUG: circuit breaker is closed, no messages will be processed.");
+                $this->output->writeln('DEBUG: circuit breaker is closed, no messages will be processed.');
             }
 
             return;
@@ -63,11 +63,11 @@ class SqsQueue implements QueueInterface
     {
         return function ($message) {
             if ($this->output->isDebug()) {
-                $this->output->writeln("DEBUG: parsing message payload");
+                $this->output->writeln('DEBUG: parsing message payload');
             }
 
             $parser = new SqsStandardPayloadParser();
-            if (isset($message["Body"]["Type"]) && $message["Body"]["Type"] === "Notification") {
+            if (isset($message['Body']['Type']) && $message['Body']['Type'] === 'Notification') {
                 $parser = new SqsSnsPayloadParser();
             }
 
@@ -76,7 +76,7 @@ class SqsQueue implements QueueInterface
             $timestamp = $message['Attributes']['SentTimestamp'];
 
             if ($this->output->isDebug()) {
-                $this->output->writeln("DEBUG: checking if message is old");
+                $this->output->writeln('DEBUG: checking if message is old');
             }
 
             $consumeMessage = $this->consumeMessage($headers, $body, $message);
@@ -88,7 +88,7 @@ class SqsQueue implements QueueInterface
     {
         return function () use ($headers, $body, $message) {
             if ($this->output->isDebug()) {
-                $this->output->writeln("DEBUG: consuming message");
+                $this->output->writeln('DEBUG: consuming message');
             }
 
             $timestamp = $message['Attributes']['SentTimestamp'];
@@ -96,7 +96,7 @@ class SqsQueue implements QueueInterface
             $this->deleteMessage($message['ReceiptHandle']);
 
             if ($this->output->isDebug()) {
-                $this->output->writeln("DEBUG: message consumed successfully");
+                $this->output->writeln('DEBUG: message consumed successfully');
             }
         };
     }
@@ -104,7 +104,7 @@ class SqsQueue implements QueueInterface
     private function receiveMessages(): array
     {
         if ($this->output->isDebug()) {
-            $this->output->writeln("DEBUG: receiving message from SQS");
+            $this->output->writeln('DEBUG: receiving message from SQS');
         }
 
         $result = SqsClient::instance()->receiveMessage(
@@ -123,7 +123,7 @@ class SqsQueue implements QueueInterface
         }
 
         if ($this->output->isDebug()) {
-            $this->output->writeln("DEBUG: no message receiving from SQS");
+            $this->output->writeln('DEBUG: no message receiving from SQS');
         }
 
         return [];

@@ -2,13 +2,13 @@
 
 namespace MVF\Servicer\Commands;
 
-use function Functional\invoker;
 use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function Functional\each;
+use function Functional\invoker;
 
 class DaemonCommand extends Command
 {
@@ -58,7 +58,7 @@ class DaemonCommand extends Command
 
         do {
             if ($output->isDebug()) {
-                $output->writeln("DEBUG: Main loop is running");
+                $output->writeln('DEBUG: Main loop is running');
             }
 
             each($this->queues, $this->handleListen($output));

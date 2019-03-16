@@ -1,25 +1,44 @@
-build:
-	docker-compose build --pull
-	docker-compose up -d
+DEFAULT_GOAL: go
 
-start:
-	docker-compose up -d --remove-orphans
+.PHONY: go
+go: down up
 
-stop:
+.PHONY: down
+down:
 	docker-compose down
 
+.PHONY: up
+up:
+	docker-compose up -d --remove-orphans
+
+.PHONY: build
+build: down rebuild up
+
+.PHONY: rebuild
+rebuild:
+	docker-compose build --pull
+
+.PHONY: package linter coverage
+package linter coverage:
+	docker exec -it servicer-$@ sh
+
+.PHONY: shell
 shell:
 	docker exec -it servicer sh
 
+.PHONY: test
 test:
 	docker exec -it servicer vendor/bin/codecept run tests/$(suite)/$(file)
 
+.PHONY: test-all
 test-all:
 	docker exec -it servicer vendor/bin/codecept run tests/
 
-coverage:
+.PHONY: cover
+cover:
 	docker exec -it servicer-coverage phpdbg -qrr vendor/bin/codecept run --coverage-html
 
+.PHONY: lint
 lint:
 	docker exec -it servicer-linter php-cs-fixer fix
 	docker exec -it servicer-linter phpcbf --standard=mvf_ruleset.xml || true

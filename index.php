@@ -24,7 +24,7 @@ class TestEvents extends \MVF\Servicer\Events
     const TEST = TestAction::class;
 }
 
-class Queues extends \MVF\Servicer\EventsBuilder
+class Queues extends \MVF\Servicer\Queues
 {
     const TEST_EVENTS = TestEvents::class;
 }
