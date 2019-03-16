@@ -21,18 +21,29 @@ class ClassBuilder
         return $this->buildClass(Constant::getAction($event));
     }
 
+    /**
+     * Mocks the specified class with the provided instance.
+     *
+     * @param string $class    The class to be mocked
+     * @param mixed  $instance Instance to be used
+     */
     public static function setInstance(string $class, $instance)
     {
         self::$instances[$class] = $instance;
     }
 
+    /**
+     * Removes mocks.
+     */
     public static function clean()
     {
         self::$instances = [];
     }
 
     /**
-     * @param string|array $class
+     * Constructs the specified class.
+     *
+     * @param string|array $class The class to be constructed
      *
      * @return mixed
      */
@@ -46,24 +57,47 @@ class ClassBuilder
         return $this->checkIfInstanceIsSet($class, $injections);
     }
 
-    private function checkIfInstanceIsSet($class, $injections)
+    /**
+     * Checks if the specified class is mocked.
+     *
+     * @param string $class      Class name to be checked
+     * @param array  $injections The list of injections for this class
+     *
+     * @return mixed
+     */
+    private function checkIfInstanceIsSet(string $class, array $injections)
     {
-        if (isset(self::$instances[$class])) {
+        if (isset(self::$instances[$class]) === true) {
             return self::$instances[$class];
         }
 
         return new $class(...$injections);
     }
 
+    /**
+     * Builds class with injections.
+     *
+     * @param array $classWithInjections Contains class name and its injections
+     *
+     * @return array
+     */
     private function buildClassWithInjections(array $classWithInjections): array
     {
-        [$class, $injectedClasses] = count($classWithInjections) > 1 ? $classWithInjections : [$classWithInjections[0], []];
+        [$class, $injectedClasses] = [$classWithInjections[0], []];
+        if (count($classWithInjections) > 1) {
+            [$class, $injectedClasses] = $classWithInjections;
+        }
 
         $injections = map($injectedClasses, $this->buildInjections());
 
         return [$class, $injections];
     }
 
+    /**
+     * Constructs injections.
+     *
+     * @return callable
+     */
     private function buildInjections(): callable
     {
         return function ($injectedClass) {
