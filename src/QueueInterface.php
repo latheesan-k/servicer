@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: drupsys
- * Date: 24/12/18
- * Time: 00:47.
- */
 
 namespace MVF\Servicer;
 
@@ -12,7 +6,15 @@ use Symfony\Component\Console\Output\StreamOutput;
 
 interface QueueInterface
 {
+    /**
+     * Listen to the queue.
+     */
     public function listen(): void;
 
-    public function setConsoleOutput(StreamOutput $output);
+    /**
+     * Sets the console output class.
+     *
+     * @param StreamOutput $output Console output class
+     */
+    public function setConsoleOutput(StreamOutput $output): void;
 }

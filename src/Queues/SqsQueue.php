@@ -54,7 +54,7 @@ class SqsQueue implements QueueInterface
         each($this->receiveMessages(), $this->parsePayload());
     }
 
-    public function setConsoleOutput(StreamOutput $output)
+    public function setConsoleOutput(StreamOutput $output): void
     {
         $this->output = $output;
     }

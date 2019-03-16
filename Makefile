@@ -22,17 +22,13 @@ rebuild:
 package linter coverage:
 	docker exec -it servicer-$@ sh
 
-.PHONY: shell
-shell:
-	docker exec -it servicer sh
-
 .PHONY: test
 test:
-	docker exec -it servicer vendor/bin/codecept run tests/$(suite)/$(file)
+	docker exec -it servicer-package vendor/bin/codecept run tests/$(suite)/$(file)
 
 .PHONY: test-all
 test-all:
-	docker exec -it servicer vendor/bin/codecept run tests/
+	docker exec -it servicer-package vendor/bin/codecept run tests/
 
 .PHONY: cover
 cover:
