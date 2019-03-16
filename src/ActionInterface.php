@@ -5,13 +5,12 @@ namespace MVF\Servicer;
 interface ActionInterface
 {
     /**
-     * Test if message is old.
+     * Determines if message should be consumed.
      *
-     * @param int       $timestamp
-     * @param \stdClass $headers
-     * @param callable  $consumeMessage
+     * @param \stdClass $headers Headers of the event
+     * @param callable  $consumeMessage Callback function that should be called if message should be consumed
      */
-    public function skipMessage(int $timestamp, \stdClass $headers, callable $consumeMessage): void;
+    public function skipMessage(\stdClass $headers, callable $consumeMessage): void;
 
     /**
      * Executes the action.

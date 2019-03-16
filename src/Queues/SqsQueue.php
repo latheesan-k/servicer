@@ -73,14 +73,13 @@ class SqsQueue implements QueueInterface
 
             $headers = $parser->getHeaders($message);
             $body = $parser->getBody($message);
-            $timestamp = $message['Attributes']['SentTimestamp'];
 
             if ($this->output->isDebug()) {
                 $this->output->writeln('DEBUG: checking if message is old');
             }
 
             $consumeMessage = $this->consumeMessage($headers, $body, $message);
-            $this->settings->isOldMessage($timestamp, $headers, $consumeMessage);
+            $this->settings->isOldMessage($headers, $consumeMessage);
         };
     }
 
@@ -91,8 +90,7 @@ class SqsQueue implements QueueInterface
                 $this->output->writeln('DEBUG: consuming message');
             }
 
-            $timestamp = $message['Attributes']['SentTimestamp'];
-            $this->events->triggerAction($timestamp, $headers, $body);
+            $this->events->triggerAction($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
 
             if ($this->output->isDebug()) {

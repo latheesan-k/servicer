@@ -13,7 +13,7 @@ class Events extends ConsoleOutput
     const __UNDEFINED__ = 'Event is not defined: ';
     const __PROCESSED__ = 'Event processed: ';
 
-    public function triggerAction(int $timestamp, \stdClass $headers, \stdClass $body): void
+    public function triggerAction(\stdClass $headers, \stdClass $body): void
     {
         $source = static::class . '::' . $headers->event;
         $action = BuilderFacade::buildActionFor($source);
@@ -22,7 +22,7 @@ class Events extends ConsoleOutput
             $this->eventHandled(self::__UNDEFINED__, $headers, $body);
         } else {
             $consumeMessage = $this->consumeMessage($action, $headers, $body);
-            $action->skipMessage($timestamp, $headers, $consumeMessage);
+            $action->skipMessage($headers, $consumeMessage);
         }
     }
 
