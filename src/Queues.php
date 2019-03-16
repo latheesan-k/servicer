@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: drupsys
- * Date: 26/01/19
- * Time: 23:27.
- */
 
 namespace MVF\Servicer;
 
@@ -14,6 +8,13 @@ class Queues
 {
     const __MOCK__ = 'SomeObject';
 
+    /**
+     * Gets the class name of the specified queue.
+     *
+     * @param string $queue The name of the queue
+     *
+     * @return string
+     */
     public function getClass(string $queue): string
     {
         $source = static::class . '::' . $queue;

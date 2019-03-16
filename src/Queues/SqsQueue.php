@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: drupsys
- * Date: 24/12/18
- * Time: 00:51.
- */
 
 namespace MVF\Servicer\Queues;
 
