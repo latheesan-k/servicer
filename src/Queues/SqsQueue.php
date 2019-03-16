@@ -12,20 +12,13 @@ use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\EventsInterface;
 use MVF\Servicer\QueueInterface;
+use MVF\Servicer\Queues\PayloadParsers\SqsSnsPayloadParser;
+use MVF\Servicer\Queues\PayloadParsers\SqsStandardPayloadParser;
 use MVF\Servicer\SettingsInterface;
 use function Functional\each;
-use function Functional\map;
-use function GuzzleHttp\json_decode;
-use function GuzzleHttp\json_encode;
 
 class SqsQueue implements QueueInterface
 {
-    const TYPES = [
-        'String' => 'StringValue',
-        'Number' => 'StringValue',
-        'Binary' => 'BinaryValue',
-    ];
-
     /**
      * @var EventsInterface
      */
@@ -53,8 +46,13 @@ class SqsQueue implements QueueInterface
     private function handleMessages(): callable
     {
         return function ($message) {
-            $headers = $this->getMessageHeaders($message);
-            $body = $this->getMessageBody($message);
+            $parser = new SqsStandardPayloadParser();
+            if (isset($message["Body"]["Type"]) && $message["Body"]["Type"] === "Notification") {
+                $parser = new SqsSnsPayloadParser();
+            }
+
+            $headers = $parser->getHeaders($message);
+            $body = $parser->getBody($message);
             $this->events->triggerAction($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
         };
@@ -72,9 +70,9 @@ class SqsQueue implements QueueInterface
             ]
         );
 
-        $message = $result->get('Messages');
-        if (isset($message)) {
-            return $message;
+        $messages = $result->get('Messages');
+        if (isset($messages)) {
+            return $messages;
         }
 
         return [];
@@ -93,43 +91,5 @@ class SqsQueue implements QueueInterface
     private function getSqsUrl(): string
     {
         return getenv('SQS_URL') . $this->settings->getName();
-    }
-
-    private function getMessageHeaders(array $message): \stdClass
-    {
-        if (isset($message['MessageAttributes'])) {
-            $messageAttributes = $message['MessageAttributes'];
-            $keys = map($messageAttributes, $this->attributesToLowercase());
-            $values = map($messageAttributes, $this->attributesToValues());
-            $json = json_encode(array_combine($keys, $values));
-
-            return json_decode($json);
-        }
-
-        return (object)[];
-    }
-
-    private function attributesToLowercase(): callable
-    {
-        return function ($value, $key) {
-            return strtolower($key);
-        };
-    }
-
-    private function attributesToValues(): callable
-    {
-        return function ($value) {
-            return $value[self::TYPES[$value['DataType']]];
-        };
-    }
-
-    private function getMessageBody(array $message): \stdClass
-    {
-        $body = (object)[];
-        if (isset($message['Body']) === true) {
-            $body = \GuzzleHttp\json_decode($message['Body']);
-        }
-
-        return $body;
     }
 }

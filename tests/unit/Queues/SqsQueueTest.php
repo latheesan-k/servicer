@@ -130,4 +130,48 @@ class SqsQueueTest extends \Codeception\Test\Unit
         Test::double(SqsClient::class, ['instance' => $client]);
         $queue->listen();
     }
+
+    public function testThatMessagesFromSNSHaveCorrectHeaders()
+    {
+        $settings = $this->make(Settings::class);
+        $triggerAction = function (\stdClass $headers, \stdClass $body) {
+            self::assertEquals("twitter", $headers->platform);
+        };
+
+        $events = $this->make(Events::class, ['triggerAction' => $triggerAction]);
+        $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+
+        $this->messages[0]['Body'] = [
+            "Type" => "Notification",
+            "MessageAttributes" => ["platform" => ["Type" => "String", "Value" => "twitter"]],
+        ];
+
+        $result = $this->make(Result::class, ['get' => $this->messages]);
+        $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
+        Test::double(SqsClient::class, ['instance' => $client]);
+        $queue->listen();
+    }
+
+    public function testThatMessagesFromSNSHaveCorrectBody()
+    {
+        $settings = $this->make(Settings::class);
+        $triggerAction = function (\stdClass $headers, \stdClass $body) {
+            self::assertEquals("hola", $body->message);
+        };
+
+        $events = $this->make(Events::class, ['triggerAction' => $triggerAction]);
+        $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+
+        $this->messages[0]['Body'] = [
+            "Type" => "Notification",
+            "Message" => '{"message": "hola"}',
+        ];
+
+        $result = $this->make(Result::class, ['get' => $this->messages]);
+        $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
+        Test::double(SqsClient::class, ['instance' => $client]);
+        $queue->listen();
+    }
 }
