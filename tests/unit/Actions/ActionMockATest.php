@@ -8,7 +8,7 @@ class ActionMockATest extends \Codeception\Test\Unit
 {
     public function testClassBuilderReturnsUndefinedActionObject()
     {
-        $mock = $this->make(ActionMockA::class);
-        $mock->handle((object)[], (object)[]);
+        $this->expectExceptionMessage('action_mock_a');
+        (new ActionMockA())->handle((object)[], (object)[]);
     }
 }

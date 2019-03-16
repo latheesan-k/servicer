@@ -15,7 +15,7 @@ use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\Events;
 use MVF\Servicer\Queues\SqsQueue;
-use MVF\Servicer\Settings;
+use MVF\Servicer\SettingsInterface;
 
 class SqsQueueTest extends \Codeception\Test\Unit
 {
@@ -28,14 +28,15 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function _before()
     {
+        $attributes = ['SentTimestamp' => 0];
         $this->messages = [
-            ['ReceiptHandle' => 'test'],
+            ['ReceiptHandle' => 'test', 'Attributes' => $attributes],
         ];
     }
 
     public function testCircuitBreakerWorks()
     {
-        $settings = $this->makeEmpty(Settings::class, ['isCircuitBreakerClosed' => true]);
+        $settings = $this->makeEmpty(SettingsInterface::class, ['isCircuitBreakerClosed' => true]);
         $events = $this->make(Events::class);
         $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
@@ -47,7 +48,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatHeadersArePassedToAction()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals('1.0.0', $headers->version);
         };
@@ -68,7 +69,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatEmptyHeadersAreAlwaysPassedToAction()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals((object)[], $headers);
         };
@@ -85,7 +86,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testCaseWhereNoMessagesWereReceived()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $events = $this->make(Events::class, ['triggerAction' => Expected::never()]);
         $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
@@ -98,7 +99,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatBodyIsPassedToAction()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals('john', $body->name);
         };
@@ -116,7 +117,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatEmptyBodyIsAlwaysPassedToAction()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->makeEmpty(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals((object)[], $body);
         };
@@ -131,9 +132,25 @@ class SqsQueueTest extends \Codeception\Test\Unit
         $queue->listen();
     }
 
+    public function testThatActionIsNotTriggeredIfEventIsOld()
+    {
+        $isOldMessage = function ($a, $b, callable $consumeMessage) {
+            $consumeMessage();
+        };
+        $settings = $this->makeEmpty(SettingsInterface::class, ['isOldMessage' => $isOldMessage]);
+        $events = $this->make(Events::class, ['triggerAction' => Expected::once()]);
+        $config = $this->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+
+        $result = $this->make(Result::class, ['get' => $this->messages]);
+        $client = $this->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
+        Test::double(SqsClient::class, ['instance' => $client]);
+        $queue->listen();
+    }
+
     public function testThatMessagesFromSNSHaveCorrectHeaders()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->make(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals("twitter", $headers->platform);
         };
@@ -155,7 +172,7 @@ class SqsQueueTest extends \Codeception\Test\Unit
 
     public function testThatMessagesFromSNSHaveCorrectBody()
     {
-        $settings = $this->make(Settings::class);
+        $settings = $this->make(SettingsInterface::class);
         $triggerAction = function (\stdClass $headers, \stdClass $body) {
             self::assertEquals("hola", $body->message);
         };

@@ -2,9 +2,7 @@
 
 namespace MVF\Servicer;
 
-use Symfony\Component\Console\Output\ConsoleOutput;
-
-class UndefinedEvent extends ConsoleOutput implements ActionInterface
+class UndefinedEvent extends StandardConditions implements ActionInterface
 {
     /**
      * Executes the action.

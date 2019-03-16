@@ -27,12 +27,15 @@ class EventsTest extends \Codeception\Test\Unit
         Test::double(BuilderFacade::class, ['buildActionFor' => $buildActionFor]);
 
         $handler = $this->make(Events::class);
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(0, (object)['event' => 'TEST'], (object)[]);
     }
 
     public function testBuildActionReturnsValidAction()
     {
-        $action = $this->makeEmpty(ActionInterface::class);
+        $skipMessage = function ($timestamp, $headers, $consumeMessage) {
+            $consumeMessage();
+        };
+        $action = $this->makeEmpty(ActionInterface::class, ['skipMessage' => $skipMessage]);
         $buildActionFor = function () use ($action) {
             return $action;
         };
@@ -43,6 +46,6 @@ class EventsTest extends \Codeception\Test\Unit
         };
         $handler = $this->make(Events::class, ['writeln' => $test]);
 
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(0, (object)['event' => 'TEST'], (object)[]);
     }
 }

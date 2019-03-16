@@ -2,6 +2,7 @@
 
 namespace MVF\Servicer\Commands;
 
+use function Functional\invoker;
 use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,12 +16,12 @@ class DaemonCommand extends Command
      * @var QueueInterface[]
      */
     private $queues;
-    private $delay = 100;
+    private $delay = 100000;
 
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface ...$queues
+     * @param QueueInterface[] $queues
      */
     public function __construct(QueueInterface ...$queues)
     {
@@ -52,9 +53,14 @@ class DaemonCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        each($this->queues, invoker('setConsoleOutput', [$output]));
         $once = $input->getOption('once');
 
         do {
+            if ($output->isDebug()) {
+                $output->writeln("DEBUG: Main loop is running");
+            }
+
             each($this->queues, $this->handleListen($output));
             usleep($this->delay);
         } while ($once != true);

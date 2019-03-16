@@ -8,7 +8,10 @@
 
 namespace MVF\Servicer;
 
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 interface QueueInterface
 {
     public function listen(): void;
+    public function setConsoleOutput(ConsoleOutput $output);
 }
