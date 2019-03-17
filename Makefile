@@ -26,10 +26,6 @@ package linter coverage:
 test:
 	docker exec -it servicer-package vendor/bin/codecept run tests/$(suite)/$(file)
 
-.PHONY: test-all
-test-all:
-	docker exec -it servicer-package vendor/bin/codecept run tests/
-
 .PHONY: cover
 cover:
 	docker exec -it servicer-coverage phpdbg -qrr vendor/bin/codecept run --coverage-html

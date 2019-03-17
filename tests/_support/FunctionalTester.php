@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Inherited Methods
  * @method void wantToTest($text)
@@ -15,9 +16,9 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class UnitTester extends \Codeception\Actor
+class FunctionalTester extends \Codeception\Actor
 {
-    use _generated\UnitTesterActions;
+    use _generated\FunctionalTesterActions;
     use \Codeception\Test\Feature\Stub;
 
    /**
