@@ -18,8 +18,8 @@ class SqsClient
     {
         $this->client = new Client(
             [
-                'region'      => getenv('AWS_REGION'),
-                'version'     => getenv('SQS_VERSION'),
+                'region' => getenv('AWS_REGION'),
+                'version' => getenv('SQS_VERSION'),
                 'credentials' => new Credentials(
                     getenv('AWS_ACCESS_KEY_ID'),
                     getenv('AWS_SECRET_ACCESS_KEY')

@@ -133,11 +133,11 @@ class SqsQueue implements QueueInterface
         ($this->debug)('DEBUG: receiving message from SQS');
         $result = SqsClient::instance()->receiveMessage(
             [
-                'AttributeNames'        => ['SentTimestamp'],
-                'MaxNumberOfMessages'   => 1,
+                'AttributeNames' => ['SentTimestamp'],
+                'MaxNumberOfMessages' => 1,
                 'MessageAttributeNames' => ['All'],
-                'QueueUrl'              => $this->getSqsUrl(),
-                'WaitTimeSeconds'       => 0,
+                'QueueUrl' => $this->getSqsUrl(),
+                'WaitTimeSeconds' => 0,
             ]
         );
 
@@ -160,7 +160,7 @@ class SqsQueue implements QueueInterface
     {
         SqsClient::instance()->deleteMessage(
             [
-                'QueueUrl'      => $this->getSqsUrl(),
+                'QueueUrl' => $this->getSqsUrl(),
                 'ReceiptHandle' => $receipt,
             ]
         );

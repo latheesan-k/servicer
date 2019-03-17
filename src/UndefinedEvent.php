@@ -14,7 +14,8 @@ class UndefinedEvent extends StandardConditions implements ActionInterface
      */
     public function handle(\stdClass $headers, \stdClass $body): void
     {
-        $message = 'UndefinedAction handle should never be called, there is a problem with the package please notify maintainer.';
+        $message = 'UndefinedAction handle should never be called';
+        $message .= ', there is a problem with the package please notify maintainer.';
 
         throw new \Exception($message);
     }
