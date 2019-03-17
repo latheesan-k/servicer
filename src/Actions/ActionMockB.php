@@ -8,11 +8,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ActionMockB extends StandardConditions implements ActionInterface
 {
-    /**
-     * @var ConsoleOutput
-     */
     private $output;
 
+    /**
+     * ActionMockB constructor.
+     *
+     * @param ConsoleOutput $output Console output
+     */
     public function __construct(ConsoleOutput $output)
     {
         $this->output = $output;
