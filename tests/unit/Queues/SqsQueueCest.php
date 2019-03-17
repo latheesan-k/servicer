@@ -44,94 +44,44 @@ class SqsQueueCest
         $queue->listen();
     }
 
-    public function testThatHeadersArePassedToAction(UnitTester $I)
+    public function headersShouldBeParsedAndPassedToAction(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals('1.0.0', $headers->version);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
         $this->messages[0]['MessageAttributes'] = [
             'Version' => ['DataType' => 'String', 'StringValue' => '1.0.0'],
         ];
 
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['version' => '1.0.0']);
     }
 
-    public function testThatEmptyHeadersAreAlwaysPassedToAction(UnitTester $I)
+    public function emptyHeadersAreAlwaysPassedToAction(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals((object)[], $headers);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionHeaderToEqual(SqsQueue::class, (object)[]);
     }
 
-    public function testCaseWhereNoMessagesWereReceived(UnitTester $I)
+    public function actionShouldNotBeCalledIfNoMessageWasReceived(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $events = $I->make(Events::class, ['triggerAction' => Expected::never()]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
-        $result = $I->make(Result::class, ['get' => null]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance(null);
+        $I->expectActionToBeCalled(Expected::never());
     }
 
-    public function testThatBodyIsPassedToAction(UnitTester $I)
+    public function bodyShouldBeParsedAndPassedToAction(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals('john', $body->name);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
         $this->messages[0]['Body'] = '{"name":"john"}';
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionBodyToEqual(SqsQueue::class, (object)['name' => 'john']);
     }
 
-    public function testThatEmptyBodyIsAlwaysPassedToAction(UnitTester $I)
+    public function emptyBodyShouldAlwaysBePassedToAction(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals((object)[], $body);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionBodyToEqual(SqsQueue::class, (object)[]);
     }
 
-    public function testThatActionIsNotTriggeredIfEventIsOld(UnitTester $I)
+    public function actionShouldBeTriggeredIfMessageIsNotOld(UnitTester $I)
     {
+        $I->mockSqsClientInstance($this->messages);
         $isOldMessage = function ($headers, callable $consumeMessage) {
             $consumeMessage();
         };
@@ -139,54 +89,39 @@ class SqsQueueCest
         $events = $I->make(Events::class, ['triggerAction' => Expected::once()]);
         $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
-
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
         $queue->listen();
     }
 
-    public function testThatMessagesFromSNSHaveCorrectHeaders(UnitTester $I)
+    public function actionShouldNotBeTriggeredIfMessageIsOld(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals('twitter', $headers->platform);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
+        $I->mockSqsClientInstance($this->messages);
+        $isOldMessage = function ($headers, callable $consumeMessage) {};
+        $settings = $I->makeEmpty(SettingsInterface::class, ['isOldMessage' => $isOldMessage]);
+        $events = $I->make(Events::class, ['triggerAction' => Expected::never()]);
         $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
+        $queue->listen();
+    }
 
+    public function messagesFromSnsShouldHaveCorrectHeaders(UnitTester $I)
+    {
         $this->messages[0]['Body'] = [
             'Type' => 'Notification',
             'MessageAttributes' => ['platform' => ['Type' => 'String', 'Value' => 'twitter']],
         ];
 
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['platform' => 'twitter']);
     }
 
-    public function testThatMessagesFromSNSHaveCorrectBody(UnitTester $I)
+    public function messagesFromSnsShouldHaveCorrectBody(UnitTester $I)
     {
-        $settings = $I->makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) {
-            self::assertEquals('hola', $body->message);
-        };
-
-        $events = $I->make(Events::class, ['triggerAction' => $triggerAction]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-
         $this->messages[0]['Body'] = [
             'Type' => 'Notification',
             'Message' => '{"message": "hola"}',
         ];
 
-        $result = $I->make(Result::class, ['get' => $this->messages]);
-        $client = $I->makeEmpty(SqsClient::class, ['receiveMessage' => $result]);
-        Test::double(SqsClient::class, ['instance' => $client]);
-        $queue->listen();
+        $I->mockSqsClientInstance($this->messages);
+        $I->expectActionBodyToEqual(SqsQueue::class, (object)['message' => 'hola']);
     }
 }
