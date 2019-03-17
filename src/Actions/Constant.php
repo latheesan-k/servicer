@@ -7,7 +7,10 @@ use MVF\Servicer\UndefinedEvent;
 class Constant
 {
     /**
-     * @param  string $event
+     * Gets action class name.
+     *
+     * @param string $event The full constant name of the event
+     *
      * @return string|array
      */
     public static function getAction(string $event)
@@ -20,7 +23,10 @@ class Constant
     }
 
     /**
-     * @param  string $queue
+     * Gets queue class name.
+     *
+     * @param string $queue The full constant name of the queue
+     *
      * @return string
      */
     public static function getBuilderFor(string $queue): string

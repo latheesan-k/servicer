@@ -13,6 +13,12 @@ class Events extends ConsoleOutput
     const __UNDEFINED__ = 'Event is not defined: ';
     const __PROCESSED__ = 'Event processed: ';
 
+    /**
+     * Run the correct action based on the event in the header.
+     *
+     * @param \stdClass $headers Attributes of the message headers
+     * @param \stdClass $body    Attributes of the message body
+     */
     public function triggerAction(\stdClass $headers, \stdClass $body): void
     {
         $source = static::class . '::' . $headers->event;
@@ -26,6 +32,15 @@ class Events extends ConsoleOutput
         }
     }
 
+    /**
+     * Higher order function that consumes the message.
+     *
+     * @param ActionInterface $action  Action to be executed
+     * @param \stdClass       $headers Attributes of the message headers
+     * @param \stdClass       $body    Attributes of the message body
+     *
+     * @return callable
+     */
     private function consumeMessage(ActionInterface $action, \stdClass $headers, \stdClass $body): callable
     {
         return function () use ($action, $headers, $body) {
@@ -34,7 +49,14 @@ class Events extends ConsoleOutput
         };
     }
 
-    private function eventHandled(string $kind, $headers, $body): void
+    /**
+     * Logs whether the event was handled.
+     *
+     * @param string    $kind    The kind of log
+     * @param \stdClass $headers Attributes of the message headers
+     * @param \stdClass $body    Attributes of the message body
+     */
+    private function eventHandled(string $kind, \stdClass $headers, \stdClass $body): void
     {
         $this->writeln($kind . json_encode($headers) . ' ' . json_encode($body));
     }

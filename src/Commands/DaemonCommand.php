@@ -12,16 +12,13 @@ use function Functional\invoker;
 
 class DaemonCommand extends Command
 {
-    /**
-     * @var QueueInterface[]
-     */
     private $queues;
     private $delay = 100000;
 
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface[] $queues
+     * @param QueueInterface ...$queues The list of queues to be polled
      */
     public function __construct(QueueInterface ...$queues)
     {
@@ -48,31 +45,50 @@ class DaemonCommand extends Command
     /**
      * Defines the behaviour of the command.
      *
-     * @param InputInterface  $input  Defines inputs
-     * @param OutputInterface $output Defines outputs
+     * @param InputInterface  $input  Defines console inputs
+     * @param OutputInterface $output Defines console outputs
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        each($this->queues, invoker('setConsoleOutput', [$output]));
-        $once = $input->getOption('once');
+        each($this->queues, invoker('setDebugFunction', [$this->debug($output)]));
 
         do {
-            if ($output->isDebug()) {
-                $output->writeln('DEBUG: Main loop is running');
-            }
-
-            each($this->queues, $this->handleListen($output));
+            $this->debug($output)('DEBUG: Main loop is running');
+            each($this->queues, $this->invokeListen($output));
             usleep($this->delay);
-        } while ($once != true);
+        } while ($input->getOption('once') !== true);
     }
 
-    private function handleListen(OutputInterface $output): callable
+    /**
+     * Listens to the queue and handles errors.
+     *
+     * @param OutputInterface $output Defines console outputs
+     *
+     * @return callable
+     */
+    private function invokeListen(OutputInterface $output): callable
     {
         return function (QueueInterface $queue) use ($output) {
             try {
                 $queue->listen();
             } catch (\Exception $exception) {
                 $output->writeln($exception->getMessage());
+            }
+        };
+    }
+
+    /**
+     * Outputs debug message if debug flag is set.
+     *
+     * @param OutputInterface $output Defines console outputs
+     *
+     * @return callable
+     */
+    private function debug(OutputInterface $output): callable
+    {
+        return function (string $message) use ($output) {
+            if ($output->isDebug() === true) {
+                $output->writeln($message);
             }
         };
     }

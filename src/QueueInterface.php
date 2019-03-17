@@ -2,8 +2,6 @@
 
 namespace MVF\Servicer;
 
-use Symfony\Component\Console\Output\StreamOutput;
-
 interface QueueInterface
 {
     /**
@@ -12,9 +10,9 @@ interface QueueInterface
     public function listen(): void;
 
     /**
-     * Sets the console output class.
+     * Sets the debug function.
      *
-     * @param StreamOutput $output Console output class
+     * @param callable $debug Function that logs a debug message
      */
-    public function setConsoleOutput(StreamOutput $output): void;
+    public function setDebugFunction(callable $debug): void;
 }

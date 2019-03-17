@@ -9,96 +9,128 @@ use MVF\Servicer\QueueInterface;
 use MVF\Servicer\Queues\PayloadParsers\SqsSnsPayloadParser;
 use MVF\Servicer\Queues\PayloadParsers\SqsStandardPayloadParser;
 use MVF\Servicer\SettingsInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\StreamOutput;
 use function Functional\each;
 
 class SqsQueue implements QueueInterface
 {
     /**
+     * Defines events of the queue.
+     *
      * @var Events
      */
     private $events;
     /**
+     * Defines settings of the queue.
+     *
      * @var SettingsInterface
      */
     private $settings;
     /**
-     * @var StreamOutput
+     * Defines the debug function.
+     *
+     * @var callable
      */
-    private $output;
+    private $debug;
 
+    /**
+     * SqsQueue constructor.
+     *
+     * @param ConfigInterface $config Holds the queue configuration
+     */
     public function __construct(ConfigInterface $config)
     {
         $this->settings = $config->getSettings();
         $this->events = $config->getEvents();
-        $this->output = new ConsoleOutput();
+        $this->debug = function () {
+        };
     }
 
+    /**
+     * Listen to the queue.
+     */
     public function listen(): void
     {
-        if ($this->settings->isCircuitBreakerClosed()) {
-            if ($this->output->isDebug()) {
-                $this->output->writeln('DEBUG: circuit breaker is closed, no messages will be processed.');
-            }
+        if ($this->settings->isCircuitBreakerClosed() === true) {
+            ($this->debug)('DEBUG: circuit breaker is closed, no messages will be processed.');
 
             return;
         }
 
-        each($this->receiveMessages(), $this->parsePayload());
+        each($this->receiveMessages(), $this->parseAndConsumeMessage());
     }
 
-    public function setConsoleOutput(StreamOutput $output): void
+    /**
+     * Sets the debug function.
+     *
+     * @param callable $debug Function that logs a debug message
+     */
+    public function setDebugFunction(callable $debug): void
     {
-        $this->output = $output;
+        $this->debug = $debug;
     }
 
-    private function parsePayload(): callable
+    /**
+     * Higher order function that parses and consumes the message received.
+     *
+     * @return callable
+     */
+    private function parseAndConsumeMessage(): callable
     {
         return function ($message) {
-            if ($this->output->isDebug()) {
-                $this->output->writeln('DEBUG: parsing message payload');
-            }
-
-            $parser = new SqsStandardPayloadParser();
-            if (isset($message['Body']['Type']) && $message['Body']['Type'] === 'Notification') {
-                $parser = new SqsSnsPayloadParser();
-            }
-
+            ($this->debug)('DEBUG: parsing message payload');
+            $parser = $this->getPayloadParser($message);
             $headers = $parser->getHeaders($message);
             $body = $parser->getBody($message);
 
-            if ($this->output->isDebug()) {
-                $this->output->writeln('DEBUG: checking if message is old');
-            }
-
+            ($this->debug)('DEBUG: checking if message is old');
             $consumeMessage = $this->consumeMessage($headers, $body, $message);
             $this->settings->isOldMessage($headers, $consumeMessage);
         };
     }
 
-    private function consumeMessage(\stdClass $headers, \stdClass $body, $message): callable
+    /**
+     * Gets the right kind of payload parser.
+     *
+     * @param array $message Attributes of the message
+     *
+     * @return SqsSnsPayloadParser|SqsStandardPayloadParser
+     */
+    private function getPayloadParser(array $message)
+    {
+        if (isset($message['Body']['Type']) === true && $message['Body']['Type'] === 'Notification') {
+            return new SqsSnsPayloadParser();
+        }
+
+        return new SqsStandardPayloadParser();
+    }
+
+    /**
+     * Higher order function that consumes the message received.
+     *
+     * @param \stdClass $headers Header attributes of the message
+     * @param \stdClass $body    Body attributes of the message
+     * @param array     $message Attributes of the received message
+     *
+     * @return callable
+     */
+    private function consumeMessage(\stdClass $headers, \stdClass $body, array $message): callable
     {
         return function () use ($headers, $body, $message) {
-            if ($this->output->isDebug()) {
-                $this->output->writeln('DEBUG: consuming message');
-            }
-
+            ($this->debug)('DEBUG: consuming message');
             $this->events->triggerAction($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
-
-            if ($this->output->isDebug()) {
-                $this->output->writeln('DEBUG: message consumed successfully');
-            }
+            ($this->debug)('DEBUG: message consumed successfully');
         };
     }
 
+    /**
+     * Receives messages from sqs queue.
+     *
+     * @return array
+     */
     private function receiveMessages(): array
     {
-        if ($this->output->isDebug()) {
-            $this->output->writeln('DEBUG: receiving message from SQS');
-        }
-
+        ($this->debug)('DEBUG: receiving message from SQS');
         $result = SqsClient::instance()->receiveMessage(
             [
                 'AttributeNames'        => ['SentTimestamp'],
@@ -110,17 +142,20 @@ class SqsQueue implements QueueInterface
         );
 
         $messages = $result->get('Messages');
-        if (isset($messages)) {
+        if (isset($messages) === true) {
             return $messages;
         }
 
-        if ($this->output->isDebug()) {
-            $this->output->writeln('DEBUG: no message receiving from SQS');
-        }
+        ($this->debug)('DEBUG: no message receiving from SQS');
 
         return [];
     }
 
+    /**
+     * Deletes messages from sqs queue.
+     *
+     * @param string $receipt The id of the message to be deleted
+     */
     private function deleteMessage(string $receipt)
     {
         SqsClient::instance()->deleteMessage(
@@ -131,6 +166,11 @@ class SqsQueue implements QueueInterface
         );
     }
 
+    /**
+     * Get the sqs queue url.
+     *
+     * @return string
+     */
     private function getSqsUrl(): string
     {
         return getenv('SQS_URL') . $this->settings->getName();

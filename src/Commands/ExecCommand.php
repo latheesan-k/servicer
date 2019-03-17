@@ -93,7 +93,8 @@ class ExecCommand extends Command
     /**
      * Converts input header options to an object.
      *
-     * @param  InputInterface $input Command line inputs
+     * @param InputInterface $input Command line inputs
+     *
      * @return \stdClass
      */
     private function getHeaders(InputInterface $input): \stdClass

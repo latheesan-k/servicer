@@ -1,16 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: drupsys
- * Date: 26/01/19
- * Time: 21:52.
- */
 
 namespace MVF\Servicer;
 
 interface ConfigInterface
 {
+    /**
+     * Gets the settings class.
+     *
+     * @return SettingsInterface
+     */
     public function getSettings(): SettingsInterface;
 
+    /**
+     * Gets the events class.
+     *
+     * @return Events
+     */
     public function getEvents(): Events;
 }
