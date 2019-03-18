@@ -37,12 +37,7 @@ class Settings implements \MVF\Servicer\SettingsInterface
         return 'test';
     }
 
-    public function isCircuitBreakerClosed(): bool
-    {
-        return false;
-    }
-
-    public function beforeReceive(\stdClass $headers, callable $receive): void
+    public function beforeReceive(callable $receive): void
     {
         $receive();
     }
