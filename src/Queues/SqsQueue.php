@@ -96,8 +96,11 @@ class SqsQueue implements QueueInterface
      */
     private function getPayloadParser(array $message)
     {
-        if (isset($message['Body']['Type']) === true && $message['Body']['Type'] === 'Notification') {
-            return new SqsSnsPayloadParser();
+        if (isset($message['Body']) === true) {
+            $body = \GuzzleHttp\json_decode($message['Body'], true);
+            if (isset($body['Type']) === true && $body['Type'] === 'Notification') {
+                return new SqsSnsPayloadParser();
+            }
         }
 
         return new SqsStandardPayloadParser();

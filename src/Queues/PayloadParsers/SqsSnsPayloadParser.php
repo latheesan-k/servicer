@@ -17,8 +17,9 @@ class SqsSnsPayloadParser extends SqsStandardPayloadParser
      */
     public function getHeaders(array $message): \stdClass
     {
-        if (isset($message['Body']['MessageAttributes']) === true) {
-            $messageAttributes = $message['Body']['MessageAttributes'];
+        $body = \GuzzleHttp\json_decode($message['Body'], true);
+        if (isset($body['MessageAttributes']) === true) {
+            $messageAttributes = $body['MessageAttributes'];
             $keys = map($messageAttributes, $this->attributesToLowercase());
             $values = map($messageAttributes, $this->attributesToValues());
             $json = json_encode(array_combine($keys, $values));
@@ -38,12 +39,12 @@ class SqsSnsPayloadParser extends SqsStandardPayloadParser
      */
     public function getBody(array $message): \stdClass
     {
-        $body = (object)[];
-        if (isset($message['Body']['Message']) === true) {
-            $body = json_decode($message['Body']['Message']);
+        $body = \GuzzleHttp\json_decode($message['Body']);
+        if (isset($body->{'Message'}) === true) {
+            return $body->{'Message'};
         }
 
-        return $body;
+        return (object)[];
     }
 
     /**
