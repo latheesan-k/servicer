@@ -21,8 +21,8 @@ interface SettingsInterface
     /**
      * Determines if message should be consumed.
      *
-     * @param \stdClass $headers        Attributes of the message headers
-     * @param callable  $consumeMessage Callback function that triggers the consumption of the message
+     * @param \stdClass $headers Attributes of the message headers
+     * @param callable  $receive Callback function that triggers the consumption of the message
      */
-    public function isOldMessage(\stdClass $headers, callable $consumeMessage): void;
+    public function beforeReceive(\stdClass $headers, callable $receive): void;
 }

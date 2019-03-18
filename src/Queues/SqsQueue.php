@@ -84,7 +84,7 @@ class SqsQueue implements QueueInterface
 
             ($this->debug)('DEBUG: checking if message is old');
             $consumeMessage = $this->consumeMessage($headers, $body, $message);
-            $this->settings->isOldMessage($headers, $consumeMessage);
+            $this->settings->beforeReceive($headers, $consumeMessage);
         };
     }
 

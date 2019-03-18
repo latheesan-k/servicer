@@ -8,12 +8,12 @@ class StandardConditionsCest
 
     public function messageIsConsumed(UnitTester $I)
     {
-        $consumeMessage = function () {
+        $consume = function () {
             $this->wasCalled = true;
         };
 
         $action = $I->make(StandardConditions::class);
-        $action->beforeReceive((object)[], $consumeMessage);
+        $action->beforeAction((object)[], $consume);
         $I->assertEquals(true, $this->wasCalled);
     }
 }

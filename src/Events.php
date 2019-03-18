@@ -28,7 +28,7 @@ class Events extends ConsoleOutput
             $this->eventHandled(self::__UNDEFINED__, $headers, $body);
         } else {
             $consumeMessage = $this->consumeMessage($action, $headers, $body);
-            $action->beforeReceive($headers, $consumeMessage);
+            $action->beforeAction($headers, $consumeMessage);
         }
     }
 

@@ -7,7 +7,6 @@
  */
 
 use AspectMock\Test;
-use Aws\Result;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
@@ -82,10 +81,10 @@ class SqsQueueCest
     public function actionShouldBeTriggeredIfMessageIsNotOld(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $isOldMessage = function ($headers, callable $consumeMessage) {
+        $beforeReceive = function ($headers, callable $consumeMessage) {
             $consumeMessage();
         };
-        $settings = $I->makeEmpty(SettingsInterface::class, ['isOldMessage' => $isOldMessage]);
+        $settings = $I->makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
         $events = $I->make(Events::class, ['triggerAction' => Expected::once()]);
         $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
@@ -95,8 +94,9 @@ class SqsQueueCest
     public function actionShouldNotBeTriggeredIfMessageIsOld(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $isOldMessage = function ($headers, callable $consumeMessage) {};
-        $settings = $I->makeEmpty(SettingsInterface::class, ['isOldMessage' => $isOldMessage]);
+        $beforeReceive = function ($headers, callable $consumeMessage) {
+        };
+        $settings = $I->makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
         $events = $I->make(Events::class, ['triggerAction' => Expected::never()]);
         $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
