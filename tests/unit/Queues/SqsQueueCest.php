@@ -78,31 +78,6 @@ class SqsQueueCest
         $I->expectActionBodyToEqual(SqsQueue::class, (object)[]);
     }
 
-    public function actionShouldBeTriggeredIfMessageIsNotOld(UnitTester $I)
-    {
-        $I->mockSqsClientInstance($this->messages);
-        $beforeReceive = function ($headers, callable $consumeMessage) {
-            $consumeMessage();
-        };
-        $settings = $I->makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $events = $I->make(Events::class, ['triggerAction' => Expected::once()]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-        $queue->listen();
-    }
-
-    public function actionShouldNotBeTriggeredIfMessageIsOld(UnitTester $I)
-    {
-        $I->mockSqsClientInstance($this->messages);
-        $beforeReceive = function ($headers, callable $consumeMessage) {
-        };
-        $settings = $I->makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $events = $I->make(Events::class, ['triggerAction' => Expected::never()]);
-        $config = $I->makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
-        $queue = new SqsQueue($config);
-        $queue->listen();
-    }
-
     public function messagesFromSnsShouldHaveCorrectHeaders(UnitTester $I)
     {
         $this->messages[0]['Body'] = [

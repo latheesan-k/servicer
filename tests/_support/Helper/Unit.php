@@ -23,28 +23,38 @@ class Unit extends \Codeception\Module
 
     public function expectActionHeaderToEqual(string $class, \stdClass $expected)
     {
-        $settings = Stub::makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) use ($expected) {
-            $this->assertEquals($expected, $headers);
+        $beforeReceive = function ($receive) {
+            $receive();
+        };
+
+        $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
+        $triggerAction = function (\stdClass $headers, \stdClass $body) use (&$actual) {
+            $actual = $headers;
         };
 
         $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
         $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new $class($config);
         $queue->listen();
+        $this->assertEquals($expected, $actual);
     }
 
     public function expectActionBodyToEqual(string $class, \stdClass $expected)
     {
-        $settings = Stub::makeEmpty(SettingsInterface::class);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) use ($expected) {
-            $this->assertEquals($expected, $body);
+        $beforeReceive = function ($receive) {
+            $receive();
+        };
+
+        $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
+        $triggerAction = function (\stdClass $headers, \stdClass $body) use (&$actual) {
+            $actual = $body;
         };
 
         $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
         $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new $class($config);
         $queue->listen();
+        $this->assertEquals($expected, $actual);
     }
 
     public function expectActionToBeCalled(Stub\StubMarshaler $expected)

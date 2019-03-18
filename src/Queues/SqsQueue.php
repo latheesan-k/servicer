@@ -50,13 +50,11 @@ class SqsQueue implements QueueInterface
      */
     public function listen(): void
     {
-        if ($this->settings->isCircuitBreakerClosed() === true) {
-            ($this->debug)('DEBUG: circuit breaker is closed, no messages will be processed.');
+        $receive = function () {
+            each($this->receiveMessages(), $this->parseAndConsumeMessage());
+        };
 
-            return;
-        }
-
-        each($this->receiveMessages(), $this->parseAndConsumeMessage());
+        $this->settings->beforeReceive($receive);
     }
 
     /**
@@ -82,9 +80,10 @@ class SqsQueue implements QueueInterface
             $headers = $parser->getHeaders($message);
             $body = $parser->getBody($message);
 
-            ($this->debug)('DEBUG: checking if message is old');
-            $consumeMessage = $this->consumeMessage($headers, $body, $message);
-            $this->settings->beforeReceive($headers, $consumeMessage);
+            ($this->debug)('DEBUG: consuming message');
+            $this->events->triggerAction($headers, $body);
+            $this->deleteMessage($message['ReceiptHandle']);
+            ($this->debug)('DEBUG: message consumed successfully');
         };
     }
 
@@ -102,25 +101,6 @@ class SqsQueue implements QueueInterface
         }
 
         return new SqsStandardPayloadParser();
-    }
-
-    /**
-     * Higher order function that consumes the message received.
-     *
-     * @param \stdClass $headers Header attributes of the message
-     * @param \stdClass $body    Body attributes of the message
-     * @param array     $message Attributes of the received message
-     *
-     * @return callable
-     */
-    private function consumeMessage(\stdClass $headers, \stdClass $body, array $message): callable
-    {
-        return function () use ($headers, $body, $message) {
-            ($this->debug)('DEBUG: consuming message');
-            $this->events->triggerAction($headers, $body);
-            $this->deleteMessage($message['ReceiptHandle']);
-            ($this->debug)('DEBUG: message consumed successfully');
-        };
     }
 
     /**
