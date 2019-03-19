@@ -87,7 +87,7 @@ class SqsQueueCest
 
     public function messagesFromSnsShouldHaveCorrectBody(UnitTester $I)
     {
-        $this->messages[0]['Body'] = '{"Type":"Notification","Message":{"message":"hola"}}';
+        $this->messages[0]['Body'] = '{"Type":"Notification","Message": "{\"message\":\"hola\"}"}';
         $I->mockSqsClientInstance($this->messages);
         $I->expectActionBodyToEqual(SqsQueue::class, (object)['message' => 'hola']);
     }

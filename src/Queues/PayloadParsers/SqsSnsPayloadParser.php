@@ -39,9 +39,9 @@ class SqsSnsPayloadParser extends SqsStandardPayloadParser
      */
     public function getBody(array $message): \stdClass
     {
-        $body = \GuzzleHttp\json_decode($message['Body']);
+        $body = json_decode($message['Body']);
         if (isset($body->{'Message'}) === true) {
-            return $body->{'Message'};
+            return json_decode($body->{'Message'});
         }
 
         return (object)[];
