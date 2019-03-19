@@ -14,7 +14,7 @@ interface SettingsInterface
     /**
      * Determines if message should be consumed.
      *
-     * @param callable  $receive Callback function that triggers the consumption of the message
+     * @param callable $receive Callback function that triggers the consumption of the message
      */
     public function beforeReceive(callable $receive): void;
 }
