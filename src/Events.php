@@ -25,7 +25,7 @@ class Events extends ConsoleOutput
         $action = BuilderFacade::buildActionFor($source);
 
         if ($action instanceof UndefinedEvent) {
-            $this->eventHandled(self::__UNDEFINED__, $headers, $body);
+            $this->log('WARNING', get_class($action), 'IGNORED', $headers, $body);
         } else {
             $consumeMessage = $this->consumeMessage($action, $headers, $body);
             $action->beforeAction($headers, $consumeMessage);
@@ -44,20 +44,31 @@ class Events extends ConsoleOutput
     private function consumeMessage(ActionInterface $action, \stdClass $headers, \stdClass $body): callable
     {
         return function () use ($action, $headers, $body) {
+            $this->log('INFO', get_class($action), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
-            $this->eventHandled(self::__PROCESSED__, $headers, $body);
+            $this->log('INFO', get_class($action), 'COMPLETED', $headers, $body);
         };
     }
 
     /**
      * Logs whether the event was handled.
      *
-     * @param string    $kind    The kind of log
+     * @param string $severity
+     * @param string $action
+     * @param string $status
      * @param \stdClass $headers Attributes of the message headers
-     * @param \stdClass $body    Attributes of the message body
+     * @param \stdClass $body Attributes of the message body
      */
-    private function eventHandled(string $kind, \stdClass $headers, \stdClass $body): void
+    private function log(string $severity, string $action, string $status, \stdClass $headers, \stdClass $body): void
     {
-        $this->writeln($kind . json_encode($headers) . ' ' . json_encode($body));
+        $payload = [
+            'severity' => $severity,
+            'action' => $action,
+            'status' => $status,
+            'header' => $headers,
+            'body' => $body,
+        ];
+
+        $this->writeln(json_encode($payload));
     }
 }

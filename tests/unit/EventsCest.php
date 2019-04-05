@@ -21,7 +21,9 @@ class EventsCest
     {
         $I->mockBuilderFacadeBuildActionFor(ActionInterface::class);
         $test = function (string $message) use ($I) {
-            $I->assertContains('Event processed', $message);
+            static $count = 0;
+            static $cases = ['STARTED', 'COMPLETED'];
+            $I->assertContains($cases[$count++], $message);
         };
 
         $handler = $I->make(Events::class, ['writeln' => $test]);
