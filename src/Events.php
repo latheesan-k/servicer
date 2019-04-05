@@ -55,16 +55,16 @@ class Events extends ConsoleOutput
      *
      * @param string $severity
      * @param string $action
-     * @param string $status
+     * @param string $state
      * @param \stdClass $headers Attributes of the message headers
      * @param \stdClass $body Attributes of the message body
      */
-    private function log(string $severity, string $action, string $status, \stdClass $headers, \stdClass $body): void
+    private function log(string $severity, string $action, string $state, \stdClass $headers, \stdClass $body): void
     {
         $payload = [
             'severity' => $severity,
             'action' => $action,
-            'status' => $status,
+            'state' => $state,
             'header' => $headers,
             'body' => $body,
         ];
