@@ -53,11 +53,11 @@ class Events extends ConsoleOutput
     /**
      * Logs whether the event was handled.
      *
-     * @param string $severity
-     * @param string $action
-     * @param string $state
-     * @param \stdClass $headers Attributes of the message headers
-     * @param \stdClass $body Attributes of the message body
+     * @param string    $severity The severity of the message
+     * @param string    $action   The action being logged
+     * @param string    $state    The state of the event
+     * @param \stdClass $headers  Attributes of the message headers
+     * @param \stdClass $body     Attributes of the message body
      */
     private function log(string $severity, string $action, string $state, \stdClass $headers, \stdClass $body): void
     {

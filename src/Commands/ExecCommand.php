@@ -2,6 +2,7 @@
 
 namespace MVF\Servicer\Commands;
 
+use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Queues;
 use Symfony\Component\Console\Command\Command;
@@ -87,9 +88,7 @@ class ExecCommand extends Command
         $queue = $input->getArgument(self::QUEUE);
         $queueClass = $this->queues->getClass($queue);
         $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers->event);
-        $action->beforeAction($headers, function () use ($action, $headers, $body) {
-            $action->handle($headers, $body);
-        });
+        $action->beforeAction($headers, $this->handleAction($action, $headers, $body));
     }
 
     /**
@@ -114,5 +113,21 @@ class ExecCommand extends Command
         $headers->event = $input->getArgument(self::ACTION);
 
         return $headers;
+    }
+
+    /**
+     * Calls the handle function on the action.
+     *
+     * @param ActionInterface $action  Action being triggered
+     * @param \stdClass       $headers Event headers
+     * @param \stdClass       $body    Event body
+     *
+     * @return \Closure
+     */
+    private function handleAction(ActionInterface $action, \stdClass $headers, \stdClass $body)
+    {
+        return function () use ($action, $headers, $body) {
+            $action->handle($headers, $body);
+        };
     }
 }
