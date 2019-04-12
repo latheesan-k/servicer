@@ -32,7 +32,7 @@ class AspectMock extends \Codeception\Module
 
     public function mockBuilderFacadeBuildActionFor(string $action, array $stubs = [])
     {
-        $beforeAction = function ($headers, $consumeMessage) {
+        $beforeAction = function ($headers, $body, $consumeMessage) {
             $consumeMessage();
         };
         $mockedActionFunctions = ['beforeAction' => $beforeAction];

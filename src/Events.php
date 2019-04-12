@@ -28,7 +28,7 @@ class Events extends ConsoleOutput
             $this->log('WARNING', get_class($action), 'IGNORED', $headers, $body);
         } else {
             $consumeMessage = $this->consumeMessage($action, $headers, $body);
-            $action->beforeAction($headers, $consumeMessage);
+            $action->beforeAction($headers, $body, $consumeMessage);
         }
     }
 

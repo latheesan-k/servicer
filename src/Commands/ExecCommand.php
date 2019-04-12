@@ -88,7 +88,7 @@ class ExecCommand extends Command
         $queue = $input->getArgument(self::QUEUE);
         $queueClass = $this->queues->getClass($queue);
         $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers->event);
-        $action->beforeAction($headers, $this->handleAction($action, $headers, $body));
+        $action->beforeAction($headers, $body, $this->handleAction($action, $headers, $body));
     }
 
     /**
