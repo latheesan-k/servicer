@@ -24,7 +24,7 @@ class ActionMockB extends StandardConditions implements ActionInterface
      * Executes the action.
      *
      * @param array $headers Headers of the event
-     * @param array $body Body of the event
+     * @param array $body    Body of the event
      */
     public function handle(array $headers, array $body): void
     {

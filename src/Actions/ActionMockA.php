@@ -11,7 +11,7 @@ class ActionMockA extends StandardConditions implements ActionInterface
      * Executes the action.
      *
      * @param array $headers Headers of the event
-     * @param array $body Body of the event
+     * @param array $body    Body of the event
      *
      * @throws \Exception used in tests
      */

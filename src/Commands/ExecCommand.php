@@ -118,9 +118,9 @@ class ExecCommand extends Command
     /**
      * Calls the handle function on the action.
      *
-     * @param ActionInterface $action Action being triggered
-     * @param array $headers Event headers
-     * @param array $body Event body
+     * @param ActionInterface $action  Action being triggered
+     * @param array           $headers Event headers
+     * @param array           $body    Event body
      *
      * @return \Closure
      */

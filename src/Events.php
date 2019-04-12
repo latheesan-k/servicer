@@ -17,7 +17,7 @@ class Events extends ConsoleOutput
      * Run the correct action based on the event in the header.
      *
      * @param array $headers Attributes of the message headers
-     * @param array $body Attributes of the message body
+     * @param array $body    Attributes of the message body
      */
     public function triggerAction(array $headers, array $body): void
     {
@@ -35,9 +35,9 @@ class Events extends ConsoleOutput
     /**
      * Higher order function that consumes the message.
      *
-     * @param ActionInterface $action Action to be executed
-     * @param array $headers Attributes of the message headers
-     * @param array $body Attributes of the message body
+     * @param ActionInterface $action  Action to be executed
+     * @param array           $headers Attributes of the message headers
+     * @param array           $body    Attributes of the message body
      *
      * @return callable
      */
@@ -54,10 +54,10 @@ class Events extends ConsoleOutput
      * Logs whether the event was handled.
      *
      * @param string $severity The severity of the message
-     * @param string $action The action being logged
-     * @param string $state The state of the event
-     * @param array $headers Attributes of the message headers
-     * @param array $body Attributes of the message body
+     * @param string $action   The action being logged
+     * @param string $state    The state of the event
+     * @param array  $headers  Attributes of the message headers
+     * @param array  $body     Attributes of the message body
      */
     private function log(string $severity, string $action, string $state, array $headers, array $body): void
     {

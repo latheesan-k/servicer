@@ -6,6 +6,11 @@ use function Functional\map;
 
 trait EventPayload
 {
+    /**
+     * Constructs array of object's attributes and values and transforms attributes to snake case.
+     *
+     * @return array
+     */
     public function toPayload(): array
     {
         $attributes = get_object_vars($this);
@@ -15,6 +20,11 @@ trait EventPayload
         return array_combine($keys, $values);
     }
 
+    /**
+     * Higher order function that takes a string and converts it to snake case.
+     *
+     * @return callable
+     */
     private function transformToSnakeCase(): callable
     {
         return function ($key) {
@@ -22,6 +32,11 @@ trait EventPayload
         };
     }
 
+    /**
+     * Higher order function that converts attribute values to either values or associative arrays.
+     *
+     * @return callable
+     */
     private function transformToPayload(): callable
     {
         return function ($value) {

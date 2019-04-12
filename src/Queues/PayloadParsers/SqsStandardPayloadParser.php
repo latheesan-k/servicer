@@ -4,7 +4,6 @@ namespace MVF\Servicer\Queues\PayloadParsers;
 
 use function Functional\map;
 use function GuzzleHttp\json_decode;
-use function GuzzleHttp\json_encode;
 
 class SqsStandardPayloadParser
 {
