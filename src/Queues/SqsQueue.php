@@ -25,12 +25,6 @@ class SqsQueue implements QueueInterface
      * @var SettingsInterface
      */
     private $settings;
-    /**
-     * Defines the debug function.
-     *
-     * @var callable
-     */
-    private $debug;
 
     /**
      * SqsQueue constructor.
@@ -41,8 +35,6 @@ class SqsQueue implements QueueInterface
     {
         $this->settings = $config->getSettings();
         $this->events = $config->getEvents();
-        $this->debug = function () {
-        };
     }
 
     /**
@@ -58,16 +50,6 @@ class SqsQueue implements QueueInterface
     }
 
     /**
-     * Sets the debug function.
-     *
-     * @param callable $debug Function that logs a debug message
-     */
-    public function setDebugFunction(callable $debug): void
-    {
-        $this->debug = $debug;
-    }
-
-    /**
      * Higher order function that parses and consumes the message received.
      *
      * @return callable
@@ -75,15 +57,12 @@ class SqsQueue implements QueueInterface
     private function parseAndConsumeMessage(): callable
     {
         return function ($message) {
-            ($this->debug)('DEBUG: parsing message payload');
             $parser = $this->getPayloadParser($message);
             $headers = $parser->getHeaders($message);
             $body = $parser->getBody($message);
 
-            ($this->debug)('DEBUG: consuming message');
             $this->events->triggerAction($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
-            ($this->debug)('DEBUG: message consumed successfully');
         };
     }
 
@@ -113,7 +92,6 @@ class SqsQueue implements QueueInterface
      */
     private function receiveMessages(): array
     {
-        ($this->debug)('DEBUG: receiving message from SQS');
         $result = SqsClient::instance()->receiveMessage(
             [
                 'AttributeNames' => ['SentTimestamp'],
@@ -128,8 +106,6 @@ class SqsQueue implements QueueInterface
         if (isset($messages) === true) {
             return $messages;
         }
-
-        ($this->debug)('DEBUG: no message receiving from SQS');
 
         return [];
     }
