@@ -83,11 +83,11 @@ class ExecCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $headers = $this->getHeaders($input);
-        $body = \GuzzleHttp\json_decode($input->getOption(self::BODY));
+        $body = \GuzzleHttp\json_decode($input->getOption(self::BODY), true);
 
         $queue = $input->getArgument(self::QUEUE);
         $queueClass = $this->queues->getClass($queue);
-        $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers->event);
+        $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers['event']);
         $action->beforeAction($headers, $body, $this->handleAction($action, $headers, $body));
     }
 
@@ -96,21 +96,21 @@ class ExecCommand extends Command
      *
      * @param InputInterface $input Command line inputs
      *
-     * @return \stdClass
+     * @return array
      */
-    private function getHeaders(InputInterface $input): \stdClass
+    private function getHeaders(InputInterface $input): array
     {
-        $headers = (object)[];
+        $headers = [];
         foreach ($input->getOption(self::HEADERS) as $header) {
             $pattern = '/^(\w*)=(.*)$/';
             if (preg_match($pattern, $header, $matches) !== false) {
                 [$full, $key, $value] = $matches;
                 $field = strtolower($key);
-                $headers->$field = $value;
+                $headers[$field] = $value;
             }
         }
 
-        $headers->event = $input->getArgument(self::ACTION);
+        $headers['event'] = $input->getArgument(self::ACTION);
 
         return $headers;
     }
@@ -118,13 +118,13 @@ class ExecCommand extends Command
     /**
      * Calls the handle function on the action.
      *
-     * @param ActionInterface $action  Action being triggered
-     * @param \stdClass       $headers Event headers
-     * @param \stdClass       $body    Event body
+     * @param ActionInterface $action Action being triggered
+     * @param array $headers Event headers
+     * @param array $body Event body
      *
      * @return \Closure
      */
-    private function handleAction(ActionInterface $action, \stdClass $headers, \stdClass $body)
+    private function handleAction(ActionInterface $action, array $headers, array $body)
     {
         return function () use ($action, $headers, $body) {
             $action->handle($headers, $body);

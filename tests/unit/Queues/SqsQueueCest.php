@@ -50,13 +50,13 @@ class SqsQueueCest
         ];
 
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['version' => '1.0.0']);
+        $I->expectActionHeaderToEqual(SqsQueue::class, ['version' => '1.0.0']);
     }
 
     public function emptyHeadersAreAlwaysPassedToAction(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)[]);
+        $I->expectActionHeaderToEqual(SqsQueue::class, []);
     }
 
     public function actionShouldNotBeCalledIfNoMessageWasReceived(UnitTester $I)
@@ -69,26 +69,26 @@ class SqsQueueCest
     {
         $this->messages[0]['Body'] = '{"name":"john"}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)['name' => 'john']);
+        $I->expectActionBodyToEqual(SqsQueue::class, ['name' => 'john']);
     }
 
     public function emptyBodyShouldAlwaysBePassedToAction(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)[]);
+        $I->expectActionBodyToEqual(SqsQueue::class, []);
     }
 
     public function messagesFromSnsShouldHaveCorrectHeaders(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"Type":"Notification","MessageAttributes":{"platform":{"Type":"String","Value":"twitter"}}}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['platform' => 'twitter']);
+        $I->expectActionHeaderToEqual(SqsQueue::class, ['platform' => 'twitter']);
     }
 
     public function messagesFromSnsShouldHaveCorrectBody(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"Type":"Notification","Message": "{\"message\":\"hola\"}"}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)['message' => 'hola']);
+        $I->expectActionBodyToEqual(SqsQueue::class, ['message' => 'hola']);
     }
 }

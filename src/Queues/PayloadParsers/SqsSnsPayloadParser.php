@@ -13,21 +13,20 @@ class SqsSnsPayloadParser extends SqsStandardPayloadParser
      *
      * @param array $message Attributes of the message
      *
-     * @return \stdClass
+     * @return array
      */
-    public function getHeaders(array $message): \stdClass
+    public function getHeaders(array $message): array
     {
         $body = \GuzzleHttp\json_decode($message['Body'], true);
         if (isset($body['MessageAttributes']) === true) {
             $messageAttributes = $body['MessageAttributes'];
             $keys = map($messageAttributes, $this->attributesToLowercase());
             $values = map($messageAttributes, $this->attributesToValues());
-            $json = json_encode(array_combine($keys, $values));
 
-            return json_decode($json);
+            return array_combine($keys, $values);
         }
 
-        return (object)[];
+        return [];
     }
 
     /**
@@ -35,16 +34,16 @@ class SqsSnsPayloadParser extends SqsStandardPayloadParser
      *
      * @param array $message Attributes of the message
      *
-     * @return \stdClass
+     * @return array
      */
-    public function getBody(array $message): \stdClass
+    public function getBody(array $message): array
     {
-        $body = json_decode($message['Body']);
-        if (isset($body->{'Message'}) === true) {
-            return json_decode($body->{'Message'});
+        $body = json_decode($message['Body'], true);
+        if (isset($body['Message']) === true) {
+            return json_decode($body['Message'], true);
         }
 
-        return (object)[];
+        return [];
     }
 
     /**

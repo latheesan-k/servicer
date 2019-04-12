@@ -21,14 +21,14 @@ class Unit extends \Codeception\Module
         }
     }
 
-    public function expectActionHeaderToEqual(string $class, \stdClass $expected)
+    public function expectActionHeaderToEqual(string $class, array $expected)
     {
         $beforeReceive = function ($receive) {
             $receive();
         };
 
         $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) use (&$actual) {
+        $triggerAction = function (array $headers, array $body) use (&$actual) {
             $actual = $headers;
         };
 
@@ -39,14 +39,14 @@ class Unit extends \Codeception\Module
         $this->assertEquals($expected, $actual);
     }
 
-    public function expectActionBodyToEqual(string $class, \stdClass $expected)
+    public function expectActionBodyToEqual(string $class, array $expected)
     {
         $beforeReceive = function ($receive) {
             $receive();
         };
 
         $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $triggerAction = function (\stdClass $headers, \stdClass $body) use (&$actual) {
+        $triggerAction = function (array $headers, array $body) use (&$actual) {
             $actual = $body;
         };
 

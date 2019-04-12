@@ -9,6 +9,6 @@ class ActionMockBCest
     {
         $console = $I->make(ConsoleOutput::class);
         $mock = new ActionMockB($console);
-        $mock->handle((object)[], (object)[]);
+        $mock->handle([], []);
     }
 }

@@ -13,7 +13,7 @@ class ExecCommandCest
 {
     public function testThatEmptyBodyIsPassedToTheAction(FunctionalTester $I)
     {
-        $handle = function (\stdClass $headers, \stdClass $body) use ($I, &$eventBody) {
+        $handle = function (array $headers, array $body) use ($I, &$eventBody) {
             $eventBody = $body;
         };
 
@@ -24,13 +24,13 @@ class ExecCommandCest
         $consumer = $I->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
-        $I->assertEquals((object)[], $eventBody);
+        $I->assertEquals([], $eventBody);
     }
 
     public function testThatDefaultHeadersArePassedToTheAction(FunctionalTester $I)
     {
-        $handle = function (\stdClass $headers, \stdClass $body) use ($I, &$event) {
-            $event = $headers->event;
+        $handle = function (array $headers, array $body) use ($I, &$event) {
+            $event = $headers['event'];
         };
 
         $action = $I->make(StandardConditions::class, ['handle' => $handle]);
@@ -45,8 +45,8 @@ class ExecCommandCest
 
     public function testThatOptionalHeadersArePassedToTheAction(FunctionalTester $I)
     {
-        $handle = function (\stdClass $headers, \stdClass $body) use ($I, &$name) {
-            $name = $headers->name;
+        $handle = function (array $headers, array $body) use ($I, &$name) {
+            $name = $headers['name'];
         };
 
         $action = $I->make(StandardConditions::class, ['handle' => $handle]);

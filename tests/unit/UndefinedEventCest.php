@@ -6,9 +6,9 @@ class UndefinedEventCest
 {
     public function handlePrintsErrorMessage(UnitTester $I)
     {
-        $I->expectException(\Exception::class, function () use ($I) {
+        $I->expectExceptionMessage("UndefinedAction handle should never be called", function () use ($I) {
             $action = $I->make(UndefinedEvent::class);
-            $action->handle((object)['event' => 'TEST'], (object)[]);
+            $action->handle(['event' => 'TEST'], []);
         });
     }
 }

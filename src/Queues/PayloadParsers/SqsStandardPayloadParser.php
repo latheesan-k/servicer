@@ -19,20 +19,19 @@ class SqsStandardPayloadParser
      *
      * @param array $message Attributes of the message
      *
-     * @return \stdClass
+     * @return array
      */
-    public function getHeaders(array $message): \stdClass
+    public function getHeaders(array $message): array
     {
         if (isset($message['MessageAttributes']) === true) {
             $messageAttributes = $message['MessageAttributes'];
             $keys = map($messageAttributes, $this->attributesToLowercase());
             $values = map($messageAttributes, $this->attributesToValues());
-            $json = json_encode(array_combine($keys, $values));
 
-            return json_decode($json);
+            return array_combine($keys, $values);
         }
 
-        return (object)[];
+        return [];
     }
 
     /**
@@ -40,13 +39,13 @@ class SqsStandardPayloadParser
      *
      * @param array $message Attributes of the message
      *
-     * @return \stdClass
+     * @return array
      */
-    public function getBody(array $message): \stdClass
+    public function getBody(array $message): array
     {
-        $body = (object)[];
+        $body = [];
         if (isset($message['Body']) === true) {
-            $body = json_decode($message['Body']);
+            $body = json_decode($message['Body'], true);
         }
 
         return $body;
