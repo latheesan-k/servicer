@@ -7,6 +7,7 @@
  */
 
 use AspectMock\Test;
+use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
@@ -59,12 +60,6 @@ class SqsQueueCest
         $I->expectActionHeaderToEqual(SqsQueue::class, []);
     }
 
-    public function actionShouldNotBeCalledIfNoMessageWasReceived(UnitTester $I)
-    {
-        $I->mockSqsClientInstance(null);
-        $I->expectActionToBeCalled(Expected::never());
-    }
-
     public function bodyShouldBeParsedAndPassedToAction(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"name":"john"}';
@@ -90,5 +85,25 @@ class SqsQueueCest
         $this->messages[0]['Body'] = '{"Type":"Notification","Message": "{\"message\":\"hola\"}"}';
         $I->mockSqsClientInstance($this->messages);
         $I->expectActionBodyToEqual(SqsQueue::class, ['message' => 'hola']);
+    }
+
+    public function messagesShouldWorkIfNoMessageIsReceived(UnitTester $I)
+    {
+        $I->mockSqsClientInstance(null);
+        $beforeReceive = function ($receive) {
+            $receive();
+        };
+
+        $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
+        $called = false;
+        $triggerAction = function (array $headers, array $body) use (&$called) {
+            $called = true;
+        };
+
+        $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
+        $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+        $queue->listen();
+        $I->assertFalse($called);
     }
 }
