@@ -23,10 +23,10 @@ class ActionMockB extends StandardConditions implements ActionInterface
     /**
      * Executes the action.
      *
-     * @param \stdClass $headers Headers of the event
-     * @param \stdClass $body    Body of the event
+     * @param array $headers Headers of the event
+     * @param array $body    Body of the event
      */
-    public function handle(\stdClass $headers, \stdClass $body): void
+    public function handle(array $headers, array $body): void
     {
         $this->output->writeln('test');
     }

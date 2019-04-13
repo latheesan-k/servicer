@@ -53,7 +53,7 @@ class ClassBuilderCest
         $I->mockGetAction(ActionMockA::class);
         $I->expectExceptionMessage('action_mock_a', function () {
             $action = $this->builder->buildActionFor('TEST');
-            $action->handle((object)[], (object)[]);
+            $action->handle([], []);
         });
     }
 
@@ -63,6 +63,6 @@ class ClassBuilderCest
         ClassBuilder::setInstance(ConsoleOutput::class, $consoleOutput);
         $I->mockGetAction([ActionMockB::class, [ConsoleOutput::class]]);
         $action = $this->builder->buildActionFor('TEST');
-        $action->handle((object)[], (object)[]);
+        $action->handle([], []);
     }
 }

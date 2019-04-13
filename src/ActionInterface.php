@@ -7,16 +7,17 @@ interface ActionInterface
     /**
      * Determines if message should be consumed.
      *
-     * @param \stdClass $headers Headers of the event
-     * @param callable  $consume Callback function that should be called if message should be consumed
+     * @param array    $headers Headers of the event
+     * @param array    $body    Payload of the event
+     * @param callable $consume Callback function that should be called if message should be consumed
      */
-    public function beforeAction(\stdClass $headers, callable $consume): void;
+    public function beforeAction(array $headers, array $body, callable $consume): void;
 
     /**
      * Executes the action.
      *
-     * @param \stdClass $headers Headers of the event
-     * @param \stdClass $body    Body of the event
+     * @param array $headers Headers of the event
+     * @param array $body    Body of the event
      */
-    public function handle(\stdClass $headers, \stdClass $body): void;
+    public function handle(array $headers, array $body): void;
 }

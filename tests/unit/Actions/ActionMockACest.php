@@ -7,7 +7,7 @@ class ActionMockACest
     public function classBuilderShouldReturnsUndefinedActionObject(UnitTester $I)
     {
         $I->expectExceptionMessage('action_mock_a', function () {
-            (new ActionMockA())->handle((object)[], (object)[]);
+            (new ActionMockA())->handle([], []);
         });
     }
 }

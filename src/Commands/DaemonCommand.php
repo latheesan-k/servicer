@@ -8,7 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function Functional\each;
-use function Functional\invoker;
 
 class DaemonCommand extends Command
 {
@@ -50,10 +49,7 @@ class DaemonCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        each($this->queues, invoker('setDebugFunction', [$this->debug($output)]));
-
         do {
-            $this->debug($output)('DEBUG: Main loop is running');
             each($this->queues, $this->invokeListen($output));
             usleep($this->delay);
         } while ($input->getOption('once') !== true);
@@ -73,22 +69,6 @@ class DaemonCommand extends Command
                 $queue->listen();
             } catch (\Exception $exception) {
                 $output->writeln($exception->getMessage());
-            }
-        };
-    }
-
-    /**
-     * Outputs debug message if debug flag is set.
-     *
-     * @param OutputInterface $output Defines console outputs
-     *
-     * @return callable
-     */
-    private function debug(OutputInterface $output): callable
-    {
-        return function (string $message) use ($output) {
-            if ($output->isDebug() === true) {
-                $output->writeln($message);
             }
         };
     }

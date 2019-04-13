@@ -7,6 +7,7 @@
  */
 
 use AspectMock\Test;
+use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MVF\Servicer\Clients\SqsClient;
 use MVF\Servicer\ConfigInterface;
@@ -50,45 +51,59 @@ class SqsQueueCest
         ];
 
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['version' => '1.0.0']);
+        $I->expectActionHeaderToEqual(SqsQueue::class, ['version' => '1.0.0']);
     }
 
     public function emptyHeadersAreAlwaysPassedToAction(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)[]);
-    }
-
-    public function actionShouldNotBeCalledIfNoMessageWasReceived(UnitTester $I)
-    {
-        $I->mockSqsClientInstance(null);
-        $I->expectActionToBeCalled(Expected::never());
+        $I->expectActionHeaderToEqual(SqsQueue::class, []);
     }
 
     public function bodyShouldBeParsedAndPassedToAction(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"name":"john"}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)['name' => 'john']);
+        $I->expectActionBodyToEqual(SqsQueue::class, ['name' => 'john']);
     }
 
     public function emptyBodyShouldAlwaysBePassedToAction(UnitTester $I)
     {
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)[]);
+        $I->expectActionBodyToEqual(SqsQueue::class, []);
     }
 
     public function messagesFromSnsShouldHaveCorrectHeaders(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"Type":"Notification","MessageAttributes":{"platform":{"Type":"String","Value":"twitter"}}}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionHeaderToEqual(SqsQueue::class, (object)['platform' => 'twitter']);
+        $I->expectActionHeaderToEqual(SqsQueue::class, ['platform' => 'twitter']);
     }
 
     public function messagesFromSnsShouldHaveCorrectBody(UnitTester $I)
     {
         $this->messages[0]['Body'] = '{"Type":"Notification","Message": "{\"message\":\"hola\"}"}';
         $I->mockSqsClientInstance($this->messages);
-        $I->expectActionBodyToEqual(SqsQueue::class, (object)['message' => 'hola']);
+        $I->expectActionBodyToEqual(SqsQueue::class, ['message' => 'hola']);
+    }
+
+    public function messagesShouldWorkIfNoMessageIsReceived(UnitTester $I)
+    {
+        $I->mockSqsClientInstance(null);
+        $beforeReceive = function ($receive) {
+            $receive();
+        };
+
+        $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
+        $called = false;
+        $triggerAction = function (array $headers, array $body) use (&$called) {
+            $called = true;
+        };
+
+        $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
+        $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
+        $queue = new SqsQueue($config);
+        $queue->listen();
+        $I->assertFalse($called);
     }
 }

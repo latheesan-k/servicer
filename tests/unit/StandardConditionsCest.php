@@ -13,7 +13,7 @@ class StandardConditionsCest
         };
 
         $action = $I->make(StandardConditions::class);
-        $action->beforeAction((object)[], $consume);
+        $action->beforeAction([], [], $consume);
         $I->assertEquals(true, $this->wasCalled);
     }
 }

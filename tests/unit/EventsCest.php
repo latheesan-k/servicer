@@ -14,7 +14,7 @@ class EventsCest
         $I->mockBuilderFacadeBuildActionFor(UndefinedEvent::class, ['writeln' => $test]);
 
         $handler = $I->make(Events::class);
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(['event' => 'TEST'], []);
     }
 
     public function buildActionReturnsValidAction(UnitTester $I)
@@ -27,6 +27,6 @@ class EventsCest
         };
 
         $handler = $I->make(Events::class, ['writeln' => $test]);
-        $handler->triggerAction((object)['event' => 'TEST'], (object)[]);
+        $handler->triggerAction(['event' => 'TEST'], []);
     }
 }
