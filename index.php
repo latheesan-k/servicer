@@ -5,8 +5,10 @@ include __DIR__.'/vendor/autoload.php';
 use MVF\Servicer\Commands\ExecCommand;
 use Symfony\Component\Console\Application;
 
-class TestAction extends \MVF\Servicer\StandardConditions
+class TestAction implements \MVF\Servicer\ActionInterface
 {
+    use \MVF\Servicer\AlwaysConsumeAction;
+
     /**
      * Executes the action.
      *

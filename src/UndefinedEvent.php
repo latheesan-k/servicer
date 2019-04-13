@@ -2,8 +2,10 @@
 
 namespace MVF\Servicer;
 
-class UndefinedEvent extends StandardConditions implements ActionInterface
+class UndefinedEvent implements ActionInterface
 {
+    use AlwaysConsumeAction;
+
     /**
      * Executes the action.
      *

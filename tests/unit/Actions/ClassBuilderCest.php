@@ -1,7 +1,7 @@
 <?php
 
 use Codeception\Stub\Expected;
-use MVF\Servicer\Actions\ActionMockA;
+use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\ActionMockB;
 use MVF\Servicer\Actions\ClassBuilder;
 use MVF\Servicer\UndefinedEvent;
@@ -31,8 +31,8 @@ class ClassBuilderCest
 
     public function classBuilderReturnsSomeConstructedObject(UnitTester $I)
     {
-        $I->mockGetAction(ActionMockA::class);
-        $I->assertInstanceOf(ActionMockA::class, $this->builder->buildActionFor('TEST'));
+        $I->mockGetAction(ActionMock::class);
+        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor('TEST'));
     }
 
     public function classBuilderCanConstructInjections(UnitTester $I)
@@ -43,18 +43,21 @@ class ClassBuilderCest
 
     public function classBuilderShouldConstructObjectIfArrayWithNoInjectionsIsProvided(UnitTester $I)
     {
-        $I->mockGetAction([ActionMockA::class]);
-        $I->assertInstanceOf(ActionMockA::class, $this->builder->buildActionFor('TEST'));
+        $I->mockGetAction([ActionMock::class]);
+        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor('TEST'));
     }
 
     public function thereIsAWayToDefineInstanceObjectsForSpecificClasses(UnitTester $I)
     {
-        ClassBuilder::setInstance(ActionMockA::class, new ActionMockA());
-        $I->mockGetAction(ActionMockA::class);
-        $I->expectExceptionMessage('action_mock_a', function () {
-            $action = $this->builder->buildActionFor('TEST');
-            $action->handle([], []);
-        });
+        ClassBuilder::setInstance(ActionMock::class, new ActionMock());
+        $I->mockGetAction(ActionMock::class);
+        $I->expectExceptionMessage(
+            'action_mock_a',
+            function () {
+                $action = $this->builder->buildActionFor('TEST');
+                $action->handle([], []);
+            }
+        );
     }
 
     public function thereIsAWayToDefineInstanceObjectsForSpecificInjection(UnitTester $I)

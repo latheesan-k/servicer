@@ -2,14 +2,14 @@
 
 namespace MVF\Servicer;
 
-use MVF\Servicer\Actions\ActionMockA;
+use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\BuilderFacade;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function GuzzleHttp\json_encode;
 
 class Events extends ConsoleOutput
 {
-    const __MOCK__ = ActionMockA::class;
+    const __MOCK__ = ActionMock::class;
     const __UNDEFINED__ = 'Event is not defined: ';
     const __PROCESSED__ = 'Event processed: ';
 

@@ -3,11 +3,13 @@
 namespace MVF\Servicer\Actions;
 
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\StandardConditions;
+use MVF\Servicer\AlwaysConsumeAction;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class ActionMockB extends StandardConditions implements ActionInterface
+class ActionMockB implements ActionInterface
 {
+    use AlwaysConsumeAction;
+
     private $output;
 
     /**

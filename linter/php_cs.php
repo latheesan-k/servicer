@@ -1,7 +1,7 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(["src", "tests"])
+    ->in(["src", "acceptance", "functional", "unit"])
 ;
 
 return PhpCsFixer\Config::create()
@@ -38,7 +38,6 @@ return PhpCsFixer\Config::create()
         "no_leading_namespace_whitespace" => true,
         "no_mixed_echo_print" => ["use" => "echo"],
         "no_multiline_whitespace_around_double_arrow" => true,
-        "multiline_whitespace_before_semicolons" => true,
         "no_short_bool_cast" => true,
         "no_spaces_around_offset" => true,
         "no_spaces_inside_parenthesis" => true,

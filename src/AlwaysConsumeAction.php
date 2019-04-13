@@ -2,7 +2,7 @@
 
 namespace MVF\Servicer;
 
-abstract class StandardConditions implements ActionInterface
+trait AlwaysConsumeAction
 {
     /**
      * Determines if message should be consumed.

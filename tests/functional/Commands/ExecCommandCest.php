@@ -1,12 +1,11 @@
 <?php
 
 use AspectMock\Test;
-use MVF\Servicer\ActionInterface;
+use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\Events;
 use MVF\Servicer\Queues;
-use MVF\Servicer\StandardConditions;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ExecCommandCest
@@ -17,7 +16,7 @@ class ExecCommandCest
             $eventBody = $body;
         };
 
-        $action = $I->make(StandardConditions::class, ['handle' => $handle]);
+        $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $I->make(Queues::class, ['getHandlerClass' => Events::class]);
@@ -33,7 +32,7 @@ class ExecCommandCest
             $event = $headers['event'];
         };
 
-        $action = $I->make(StandardConditions::class, ['handle' => $handle]);
+        $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $I->make(Queues::class);
@@ -49,7 +48,7 @@ class ExecCommandCest
             $name = $headers['name'];
         };
 
-        $action = $I->make(StandardConditions::class, ['handle' => $handle]);
+        $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
         $eventHandlers = $I->make(Queues::class);

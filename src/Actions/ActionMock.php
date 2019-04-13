@@ -3,10 +3,12 @@
 namespace MVF\Servicer\Actions;
 
 use MVF\Servicer\ActionInterface;
-use MVF\Servicer\StandardConditions;
+use MVF\Servicer\AlwaysConsumeAction;
 
-class ActionMockA extends StandardConditions implements ActionInterface
+class ActionMock implements ActionInterface
 {
+    use AlwaysConsumeAction;
+
     /**
      * Executes the action.
      *
