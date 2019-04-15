@@ -3,12 +3,11 @@
 namespace MVF\Servicer\Mocks;
 
 use MVF\Servicer\EventHeaders;
-use MVF\Servicer\EventPayload;
 use MVF\Servicer\EventPayloadInterface;
 
 class HeaderAMock implements EventPayloadInterface
 {
-    use EventHeaders, EventPayload;
+    use EventHeaders;
 
     /**
      * HeaderAMock constructor.

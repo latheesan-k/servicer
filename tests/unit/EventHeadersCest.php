@@ -45,4 +45,9 @@ class EventHeadersCest
         $this->mock->from($this->headers);
         $I->assertEquals(15, $this->mock->getCreatedAt());
     }
+
+    public function asd(UnitTester $I)
+    {
+        $I->assertArrayNotHasKey('created_at', $this->mock->toPayload());
+    }
 }

@@ -2,11 +2,31 @@
 
 namespace MVF\Servicer;
 
+use function Functional\map;
+
 trait EventHeaders
 {
+    use EventPayload;
+
     private $event;
     private $version;
     private $createdAt = 0;
+
+    /**
+     * Constructs array of object's attributes and values and transforms attributes to snake case.
+     *
+     * @return array
+     */
+    public function toPayload(): array
+    {
+        $attributes = get_object_vars($this);
+        unset($attributes['createdAt']);
+
+        $keys = map(array_keys($attributes), $this->transformToSnakeCase());
+        $values = map(array_values($attributes), $this->transformToPayload());
+
+        return array_combine($keys, $values);
+    }
 
     /**
      * Get the name of the event.
