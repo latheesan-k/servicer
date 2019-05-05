@@ -37,13 +37,13 @@ class ClassBuilderCest
 
     public function classBuilderCanConstructInjections(UnitTester $I)
     {
-        $I->mockGetAction([ActionMockB::class, [ConsoleOutput::class]]);
+        $I->mockGetAction(['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]]);
         $I->assertInstanceOf(ActionMockB::class, $this->builder->buildActionFor('TEST'));
     }
 
     public function classBuilderShouldConstructObjectIfArrayWithNoInjectionsIsProvided(UnitTester $I)
     {
-        $I->mockGetAction([ActionMock::class]);
+        $I->mockGetAction(['class' => ActionMock::class]);
         $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor('TEST'));
     }
 
@@ -64,7 +64,7 @@ class ClassBuilderCest
     {
         $consoleOutput = $I->make(ConsoleOutput::class, ['writeln' => Expected::once()]);
         ClassBuilder::setInstance(ConsoleOutput::class, $consoleOutput);
-        $I->mockGetAction([ActionMockB::class, [ConsoleOutput::class]]);
+        $I->mockGetAction(['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]]);
         $action = $this->builder->buildActionFor('TEST');
         $action->handle([], []);
     }

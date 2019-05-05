@@ -2,12 +2,19 @@
 
 include __DIR__.'/vendor/autoload.php';
 
+use MVF\Servicer\ActionInterface;
+use MVF\Servicer\AlwaysConsumeAction;
+use MVF\Servicer\Commands\DaemonCommand;
 use MVF\Servicer\Commands\ExecCommand;
+use MVF\Servicer\ConfigInterface;
+use MVF\Servicer\Events;
+use MVF\Servicer\Queues\SqsQueue;
+use MVF\Servicer\SettingsInterface;
 use Symfony\Component\Console\Application;
 
-class TestAction implements \MVF\Servicer\ActionInterface
+class TestAction implements ActionInterface
 {
-    use \MVF\Servicer\AlwaysConsumeAction;
+    use AlwaysConsumeAction;
 
     /**
      * Executes the action.
@@ -21,7 +28,7 @@ class TestAction implements \MVF\Servicer\ActionInterface
     }
 }
 
-class TestEvents extends \MVF\Servicer\Events
+class TestEvents extends Events
 {
     const TEST = TestAction::class;
 }
@@ -31,7 +38,7 @@ class Queues extends \MVF\Servicer\Queues
     const TEST_EVENTS = TestEvents::class;
 }
 
-class Settings implements \MVF\Servicer\SettingsInterface
+class Settings implements SettingsInterface
 {
 
     public function getName(): string
@@ -45,14 +52,14 @@ class Settings implements \MVF\Servicer\SettingsInterface
     }
 }
 
-class Config implements \MVF\Servicer\ConfigInterface
+class Config implements ConfigInterface
 {
-    public function getSettings(): \MVF\Servicer\SettingsInterface
+    public function getSettings(): SettingsInterface
     {
         return new Settings();
     }
 
-    public function getEvents(): \MVF\Servicer\Events
+    public function getEvents(): Events
     {
         return new TestEvents();
     }
@@ -61,8 +68,8 @@ class Config implements \MVF\Servicer\ConfigInterface
 $app = new Application();
 
 $exec = new ExecCommand(new Queues());
-$daemon = new \MVF\Servicer\Commands\DaemonCommand(
-    new \MVF\Servicer\Queues\SqsQueue(new Config())
+$daemon = new DaemonCommand(
+    new SqsQueue(new Config())
 );
 
 $app->addCommands([$exec, $daemon]);

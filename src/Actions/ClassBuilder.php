@@ -83,9 +83,10 @@ class ClassBuilder
      */
     private function buildClassWithInjections(array $classWithInjections): array
     {
-        [$class, $injectedClasses] = [$classWithInjections[0], []];
+        [$class, $injectedClasses] = [$classWithInjections['class'], []];
         if (count($classWithInjections) > 1) {
-            [$class, $injectedClasses] = $classWithInjections;
+            $class = $classWithInjections['class'];
+            $injectedClasses = $classWithInjections['with'];
         }
 
         $injections = map($injectedClasses, $this->buildInjections());
