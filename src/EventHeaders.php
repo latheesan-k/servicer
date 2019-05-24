@@ -2,8 +2,8 @@
 
 namespace MVF\Servicer;
 
-use function Functional\map;
 use OpenTracing\GlobalTracer;
+use function Functional\map;
 
 trait EventHeaders
 {
@@ -72,7 +72,7 @@ trait EventHeaders
         $this->version = $version;
 
         $span = GlobalTracer::get()->getActiveSpan();
-        if (isset($span)) {
+        if (isset($span) === true) {
             GlobalTracer::get()->inject($span->getContext(), 'text_map', $carrier);
             $this->carrier = \GuzzleHttp\json_encode($carrier);
         } else {

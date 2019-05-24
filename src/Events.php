@@ -8,8 +8,8 @@ use MVF\Servicer\Actions\Constant;
 use OpenTracing\GlobalTracer;
 use ReflectionClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use function GuzzleHttp\json_encode;
 use function Functional\each;
+use function GuzzleHttp\json_encode;
 
 class Events extends ConsoleOutput
 {
@@ -28,7 +28,7 @@ class Events extends ConsoleOutput
         $event = static::class . '::' . $headers['event'];
         $actions = Constant::getActions($event);
 
-        if (empty($actions)) {
+        if (empty($actions) === true) {
             $this->log('WARNING', 'UNDEFINED_EVENT', 'IGNORED', $headers, $body);
         } else {
             each($actions, $this->triggerAction($headers, $body));
@@ -39,7 +39,7 @@ class Events extends ConsoleOutput
      * Run the correct action.
      *
      * @param array $headers Attributes of the message headers
-     * @param array $body Attributes of the message body
+     * @param array $body    Attributes of the message body
      *
      * @return callable
      */
@@ -66,7 +66,7 @@ class Events extends ConsoleOutput
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
 
-            if (isset($headers['carrier'])) {
+            if (isset($headers['carrier']) === true) {
                 GlobalTracer::get()->extract('text_map', $headers['carrier']);
             }
 
@@ -91,10 +91,10 @@ class Events extends ConsoleOutput
     {
         $payload = [
             'severity' => $severity,
-            'event' => $headers['event'] ?? 'UNDEFINED_EVENT',
+            'event' => ($headers['event'] ?? 'UNDEFINED_EVENT'),
             'action' => $action,
             'state' => $state,
-            'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body])
+            'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body]),
         ];
 
         $this->writeln(json_encode($payload));

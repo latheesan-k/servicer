@@ -4,7 +4,6 @@ use Codeception\Stub\Expected;
 use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\ActionMockB;
 use MVF\Servicer\Actions\ClassBuilder;
-use MVF\Servicer\UndefinedEvent;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ClassBuilderCest
@@ -45,6 +44,7 @@ class ClassBuilderCest
     public function thereIsAWayToDefineInstanceObjectsForSpecificClasses(UnitTester $I)
     {
         $message = '';
+
         try {
             ClassBuilder::setInstance(ActionMockB::class, new ActionMock());
             $action = $this->builder->buildActionFor(ActionMockB::class);
