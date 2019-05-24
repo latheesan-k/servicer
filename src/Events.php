@@ -5,6 +5,7 @@ namespace MVF\Servicer;
 use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Actions\Constant;
+use OpenTracing\GlobalTracer;
 use ReflectionClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function GuzzleHttp\json_encode;
@@ -48,9 +49,15 @@ class Events extends ConsoleOutput
     {
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
+
+            GlobalTracer::get()->extract('text_map', $headers['carrier']);
+            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
+
             $this->log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             $this->log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
+
+            $span->finish();
         };
     }
 
