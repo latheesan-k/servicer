@@ -46,7 +46,7 @@ class EventHeadersCest
         $I->assertEquals(15, $this->mock->getCreatedAt());
     }
 
-    public function asd(UnitTester $I)
+    public function shouldNotAddCreatedAtToThePayload(UnitTester $I)
     {
         $I->assertArrayNotHasKey('created_at', $this->mock->toPayload());
     }
