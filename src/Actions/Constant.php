@@ -17,7 +17,7 @@ class Constant
             return constant($event);
         }
 
-        return 'UndefinedEvent';
+        return 'UNDEFINED_EVENT';
     }
 
     /**

@@ -13,6 +13,6 @@ class ConstantsCest
 
     public function shouldReturnUndefinedActionIfConstantIsNotDefined(UnitTester $I)
     {
-        $I->assertEquals('UndefinedEvent', Constant::getAction(Events::class . '::TEST'));
+        $I->assertEquals('UNDEFINED_EVENT', Constant::getAction(Events::class . '::TEST'));
     }
 }

@@ -5,6 +5,7 @@ namespace MVF\Servicer;
 use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Actions\Constant;
+use ReflectionClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function GuzzleHttp\json_encode;
 
@@ -25,7 +26,7 @@ class Events extends ConsoleOutput
         $event = static::class . '::' . $headers['event'];
         $class = Constant::getAction($event);
 
-        if ($class === 'UndefinedEvent') {
+        if ($class === 'UNDEFINED_EVENT') {
             $this->log('WARNING', $class, 'IGNORED', $headers, $body);
         } else {
             $action = BuilderFacade::buildActionFor($class);
@@ -46,9 +47,10 @@ class Events extends ConsoleOutput
     private function consumeMessage(ActionInterface $action, array $headers, array $body): callable
     {
         return function () use ($action, $headers, $body) {
-            $this->log('INFO', get_class($action), 'STARTED', $headers, $body);
+            $reflect = new ReflectionClass($action);
+            $this->log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
-            $this->log('INFO', get_class($action), 'COMPLETED', $headers, $body);
+            $this->log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
         };
     }
 
@@ -65,10 +67,10 @@ class Events extends ConsoleOutput
     {
         $payload = [
             'severity' => $severity,
+            'event' => $headers['event'] ?? 'UNDEFINED_EVENT',
             'action' => $action,
             'state' => $state,
-            'header' => $headers,
-            'body' => $body,
+            'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body])
         ];
 
         $this->writeln(json_encode($payload));
