@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d37f782adc5c7adf562e3c3d73a861a",
+    "content-hash": "7ac0d41f372fccdb769d92ad3be32afb",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -465,6 +465,50 @@
                 "jsonpath"
             ],
             "time": "2016-12-03T22:08:25+00:00"
+        },
+        {
+            "name": "opentracing/opentracing",
+            "version": "1.0.0-beta6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opentracing/opentracing-php.git",
+                "reference": "42eb0e58c68054fd7c994b58831ea4cc207e8a0e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opentracing/opentracing-php/zipball/42eb0e58c68054fd7c994b58831ea4cc207e8a0e",
+                "reference": "42eb0e58c68054fd7c994b58831ea4cc207e8a0e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~7.5.8",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OpenTracing\\": "src/OpenTracing/"
+                },
+                "files": [
+                    "src/OpenTracing/Tags.php",
+                    "src/OpenTracing/Formats.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "José Carlos Chávez",
+                    "email": "jcchavezs@gmail.com"
+                }
+            ],
+            "description": "OpenTracing API for PHP",
+            "time": "2019-04-10T07:57:39+00:00"
         },
         {
             "name": "psr/http-message",
@@ -3480,7 +3524,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "opentracing/opentracing": 10
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

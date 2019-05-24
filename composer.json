@@ -13,7 +13,8 @@
         "php": "7.1.*",
         "symfony/console": "^4.2",
         "aws/aws-sdk-php": "^3.82",
-        "lstrojny/functional-php": "^1.9"
+        "lstrojny/functional-php": "^1.9",
+        "opentracing/opentracing": "1.0.0-beta6"
     },
     "autoload": {
         "psr-4": {
