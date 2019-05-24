@@ -50,13 +50,14 @@ class Events extends ConsoleOutput
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
 
-            GlobalTracer::get()->extract('text_map', $headers['carrier']);
-            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
+            if (isset($headers['carrier'])) {
+                GlobalTracer::get()->extract('text_map', $headers['carrier']);
+            }
 
+            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
             $this->log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             $this->log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
-
             $span->finish();
         };
     }
