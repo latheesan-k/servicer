@@ -28,11 +28,11 @@ class Unit extends \Codeception\Module
         };
 
         $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $triggerAction = function (array $headers, array $body) use (&$actual) {
+        $triggerActions = function (array $headers, array $body) use (&$actual) {
             $actual = $headers;
         };
 
-        $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
+        $events = Stub::make(Events::class, ['triggerActions' => $triggerActions]);
         $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new $class($config);
         $queue->listen();
@@ -46,11 +46,11 @@ class Unit extends \Codeception\Module
         };
 
         $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
-        $triggerAction = function (array $headers, array $body) use (&$actual) {
+        $triggerActions = function (array $headers, array $body) use (&$actual) {
             $actual = $body;
         };
 
-        $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
+        $events = Stub::make(Events::class, ['triggerActions' => $triggerActions]);
         $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new $class($config);
         $queue->listen();

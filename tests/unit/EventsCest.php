@@ -13,7 +13,7 @@ class EventsCest
         $I->mockBuilderFacadeBuildActionFor(ActionInterface::class, ['writeln' => $test]);
 
         $handler = $I->make(Events::class);
-        $handler->triggerAction(['event' => 'TEST'], []);
+        $handler->triggerActions(['event' => 'TEST'], []);
     }
 
     public function buildActionReturnsValidAction(UnitTester $I)
@@ -26,6 +26,6 @@ class EventsCest
         };
 
         $handler = $I->make(Events::class, ['writeln' => $test]);
-        $handler->triggerAction(['event' => '__MOCK__'], []);
+        $handler->triggerActions(['event' => '__MOCK__'], []);
     }
 }

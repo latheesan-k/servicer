@@ -61,7 +61,7 @@ class SqsQueue implements QueueInterface
             $headers = $parser->getHeaders($message);
             $body = $parser->getBody($message);
 
-            $this->events->triggerAction($headers, $body);
+            $this->events->triggerActions($headers, $body);
             $this->deleteMessage($message['ReceiptHandle']);
         };
     }

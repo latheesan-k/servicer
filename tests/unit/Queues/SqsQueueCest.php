@@ -96,11 +96,11 @@ class SqsQueueCest
 
         $settings = Stub::makeEmpty(SettingsInterface::class, ['beforeReceive' => $beforeReceive]);
         $called = false;
-        $triggerAction = function (array $headers, array $body) use (&$called) {
+        $triggerActions = function (array $headers, array $body) use (&$called) {
             $called = true;
         };
 
-        $events = Stub::make(Events::class, ['triggerAction' => $triggerAction]);
+        $events = Stub::make(Events::class, ['triggerActions' => $triggerActions]);
         $config = Stub::makeEmpty(ConfigInterface::class, ['getSettings' => $settings, 'getEvents' => $events]);
         $queue = new SqsQueue($config);
         $queue->listen();

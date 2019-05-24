@@ -8,11 +8,11 @@ class ConstantsCest
 {
     public function shouldReturnValueIfConstantIsDefined(UnitTester $I)
     {
-        $I->assertEquals(ActionMock::class, Constant::getAction(Events::class . '::__MOCK__'));
+        $I->assertEquals([ActionMock::class], Constant::getActions(Events::class . '::__MOCK__'));
     }
 
     public function shouldReturnUndefinedActionIfConstantIsNotDefined(UnitTester $I)
     {
-        $I->assertEquals('UNDEFINED_EVENT', Constant::getAction(Events::class . '::TEST'));
+        $I->assertEquals([], Constant::getActions(Events::class . '::TEST'));
     }
 }

@@ -13,7 +13,7 @@ class BuilderFacade
      *
      * @return ActionInterface
      */
-    public static function buildActionFor(string $event): ActionInterface
+    public static function buildActionFor($event): ActionInterface
     {
         $builder = new ClassBuilder();
 

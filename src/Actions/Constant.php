@@ -9,15 +9,15 @@ class Constant
      *
      * @param string $event The full constant name of the event
      *
-     * @return string|array
+     * @return array
      */
-    public static function getAction(string $event)
+    public static function getActions(string $event): array
     {
         if (defined($event) === true) {
             return constant($event);
         }
 
-        return 'UNDEFINED_EVENT';
+        return [];
     }
 
     /**

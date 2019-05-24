@@ -30,7 +30,7 @@ class TestAction implements ActionInterface
 
 class TestEvents extends Events
 {
-    const TEST = TestAction::class;
+    const TEST = [TestAction::class];
 }
 
 class Queues extends \MVF\Servicer\Queues
