@@ -72,10 +72,9 @@ trait EventHeaders
         $this->version = $version;
 
         $span = GlobalTracer::get()->getActiveSpan();
-        if (isset($span) === true) {
-            GlobalTracer::get()->inject($span->getContext(), 'text_map', $carrier);
-            $this->carrier = \GuzzleHttp\json_encode($carrier);
-        } else {
+        GlobalTracer::get()->inject($span->getContext(), 'text_map', $carrier);
+        $this->carrier = \GuzzleHttp\json_encode($carrier);
+        if (isset($carrier) === false) {
             $this->carrier = null;
         }
     }

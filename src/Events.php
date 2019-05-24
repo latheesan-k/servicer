@@ -91,7 +91,7 @@ class Events extends ConsoleOutput
     {
         $payload = [
             'severity' => $severity,
-            'event' => ($headers['event'] ?? 'UNDEFINED_EVENT'),
+            'event' => ($headers['event'] ?? $action),
             'action' => $action,
             'state' => $state,
             'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body]),
