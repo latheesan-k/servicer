@@ -24,48 +24,44 @@ class ClassBuilderCest
         ClassBuilder::clean();
     }
 
-    public function classBuilderReturnsUndefinedActionObject(UnitTester $I)
-    {
-        $I->assertInstanceOf(UndefinedEvent::class, $this->builder->buildActionFor('UNDEFINED'));
-    }
-
     public function classBuilderReturnsSomeConstructedObject(UnitTester $I)
     {
-        $I->mockGetAction(ActionMock::class);
-        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor('TEST'));
+        $class = ActionMock::class;
+        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor($class));
     }
 
     public function classBuilderCanConstructInjections(UnitTester $I)
     {
-        $I->mockGetAction(['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]]);
-        $I->assertInstanceOf(ActionMockB::class, $this->builder->buildActionFor('TEST'));
+        $class = ['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]];
+        $I->assertInstanceOf(ActionMockB::class, $this->builder->buildActionFor($class));
     }
 
     public function classBuilderShouldConstructObjectIfArrayWithNoInjectionsIsProvided(UnitTester $I)
     {
-        $I->mockGetAction(['class' => ActionMock::class]);
-        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor('TEST'));
+        $class = ['class' => ActionMock::class];
+        $I->assertInstanceOf(ActionMock::class, $this->builder->buildActionFor($class));
     }
 
     public function thereIsAWayToDefineInstanceObjectsForSpecificClasses(UnitTester $I)
     {
-        ClassBuilder::setInstance(ActionMock::class, new ActionMock());
-        $I->mockGetAction(ActionMock::class);
-        $I->expectExceptionMessage(
-            'action_mock_a',
-            function () {
-                $action = $this->builder->buildActionFor('TEST');
-                $action->handle([], []);
-            }
-        );
+        $message = '';
+        try {
+            ClassBuilder::setInstance(ActionMockB::class, new ActionMock());
+            $action = $this->builder->buildActionFor(ActionMockB::class);
+            $action->handle([], []);
+        } catch (Exception $exception) {
+            $message = $exception->getMessage();
+        }
+
+        $I->assertStringStartsWith('action_mock_a', $message);
     }
 
     public function thereIsAWayToDefineInstanceObjectsForSpecificInjection(UnitTester $I)
     {
         $consoleOutput = $I->make(ConsoleOutput::class, ['writeln' => Expected::once()]);
         ClassBuilder::setInstance(ConsoleOutput::class, $consoleOutput);
-        $I->mockGetAction(['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]]);
-        $action = $this->builder->buildActionFor('TEST');
+        $class = ['class' => ActionMockB::class, 'with' => [ConsoleOutput::class]];
+        $action = $this->builder->buildActionFor($class);
         $action->handle([], []);
     }
 }

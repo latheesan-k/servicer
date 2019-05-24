@@ -9,7 +9,7 @@ class BuilderFacade
     /**
      * Creates an action class for the specified event.
      *
-     * @param string $event Action class name
+     * @param string|array $event Action class name
      *
      * @return ActionInterface
      */

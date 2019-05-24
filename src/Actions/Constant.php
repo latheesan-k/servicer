@@ -2,8 +2,6 @@
 
 namespace MVF\Servicer\Actions;
 
-use MVF\Servicer\UndefinedEvent;
-
 class Constant
 {
     /**
@@ -19,7 +17,7 @@ class Constant
             return constant($event);
         }
 
-        return UndefinedEvent::class;
+        return 'UndefinedEvent';
     }
 
     /**

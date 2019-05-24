@@ -2,7 +2,6 @@
 
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Events;
-use MVF\Servicer\UndefinedEvent;
 
 class EventsCest
 {
@@ -11,7 +10,7 @@ class EventsCest
         $test = function (string $message) use ($I) {
             $I->assertContains('Event is not defined', $message);
         };
-        $I->mockBuilderFacadeBuildActionFor(UndefinedEvent::class, ['writeln' => $test]);
+        $I->mockBuilderFacadeBuildActionFor(ActionInterface::class, ['writeln' => $test]);
 
         $handler = $I->make(Events::class);
         $handler->triggerAction(['event' => 'TEST'], []);
@@ -27,6 +26,6 @@ class EventsCest
         };
 
         $handler = $I->make(Events::class, ['writeln' => $test]);
-        $handler->triggerAction(['event' => 'TEST'], []);
+        $handler->triggerAction(['event' => '__MOCK__'], []);
     }
 }

@@ -12,13 +12,13 @@ class ClassBuilder
     /**
      * Get the specified action from the list of defined actions.
      *
-     * @param string $event Name of the event
+     * @param string|array $action Name of the event
      *
      * @return ActionInterface
      */
-    public function buildActionFor(string $event): ActionInterface
+    public function buildActionFor($action): ActionInterface
     {
-        return $this->buildClass(Constant::getAction($event));
+        return $this->buildClass($action);
     }
 
     /**
