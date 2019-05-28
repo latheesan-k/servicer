@@ -11,7 +11,7 @@ trait EventHeaders
 
     private $event;
     private $version;
-    private $carrier;
+    private $carrier = null;
     private $createdAt = 0;
 
     /**
@@ -72,11 +72,12 @@ trait EventHeaders
         $this->version = $version;
 
         $span = GlobalTracer::get()->getActiveSpan();
+        if (isset($span) === false) {
+            return;
+        }
+
         GlobalTracer::get()->inject($span->getContext(), 'text_map', $carrier);
         $this->carrier = \GuzzleHttp\json_encode($carrier);
-        if (isset($carrier) === false) {
-            $this->carrier = null;
-        }
     }
 
     /**
