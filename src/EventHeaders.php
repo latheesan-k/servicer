@@ -11,7 +11,7 @@ trait EventHeaders
 
     private $event;
     private $version;
-    private $carrier = null;
+    private $carrier;
     private $createdAt = 0;
 
     /**
