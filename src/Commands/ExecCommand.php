@@ -4,12 +4,14 @@ namespace MVF\Servicer\Commands;
 
 use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
+use MVF\Servicer\Actions\Constant;
 use MVF\Servicer\Queues;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Functional\each;
 
 class ExecCommand extends Command
 {
@@ -87,8 +89,9 @@ class ExecCommand extends Command
 
         $queue = $input->getArgument(self::QUEUE);
         $queueClass = $this->queues->getClass($queue);
-        $action = BuilderFacade::buildActionFor($queueClass . '::' . $headers['event']);
-        $action->beforeAction($headers, $body, $this->handleAction($action, $headers, $body));
+
+        $actions = Constant::getActions($queueClass . '::' . $headers['event']);
+        each($actions, $this->triggerActions($headers, $body));
     }
 
     /**
@@ -116,6 +119,22 @@ class ExecCommand extends Command
     }
 
     /**
+     * Run actions based on the event in the header.
+     *
+     * @param array $headers Attributes of the message headers
+     * @param array $body    Attributes of the message body
+     *
+     * @return callable
+     */
+    private function triggerActions(array $headers, array $body): callable
+    {
+        return function ($action) use ($headers, $body) {
+            $action = BuilderFacade::buildActionFor($action);
+            $action->beforeAction($headers, $body, $this->triggerAction($action, $headers, $body));
+        };
+    }
+
+    /**
      * Calls the handle function on the action.
      *
      * @param ActionInterface $action  Action being triggered
@@ -124,7 +143,7 @@ class ExecCommand extends Command
      *
      * @return \Closure
      */
-    private function handleAction(ActionInterface $action, array $headers, array $body)
+    private function triggerAction(ActionInterface $action, array $headers, array $body)
     {
         return function () use ($action, $headers, $body) {
             $action->handle($headers, $body);

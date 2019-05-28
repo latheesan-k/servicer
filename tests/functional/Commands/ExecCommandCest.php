@@ -19,7 +19,7 @@ class ExecCommandCest
         $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $I->make(Queues::class, ['getHandlerClass' => Events::class]);
+        $eventHandlers = $I->make(Queues::class, ['getClass' => Events::class]);
         $consumer = $I->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
@@ -28,14 +28,14 @@ class ExecCommandCest
 
     public function testThatDefaultHeadersArePassedToTheAction(FunctionalTester $I)
     {
-        $handle = function (array $headers, array $body) use ($I, &$event) {
+        $handle = function (array $headers, array $body) use (&$event) {
             $event = $headers['event'];
         };
 
         $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $I->make(Queues::class);
+        $eventHandlers = $I->make(Queues::class, ['getClass' => Events::class]);
         $consumer = $I->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => 'test', ExecCommand::ACTION => '__MOCK__']);
@@ -44,14 +44,14 @@ class ExecCommandCest
 
     public function testThatOptionalHeadersArePassedToTheAction(FunctionalTester $I)
     {
-        $handle = function (array $headers, array $body) use ($I, &$name) {
+        $handle = function (array $headers, array $body) use (&$name) {
             $name = $headers['name'];
         };
 
         $action = $I->make(ActionMock::class, ['handle' => $handle]);
         Test::double(BuilderFacade::class, ['buildActionFor' => $action]);
 
-        $eventHandlers = $I->make(Queues::class);
+        $eventHandlers = $I->make(Queues::class, ['getClass' => Events::class]);
         $consumer = $I->construct(ExecCommand::class, [$eventHandlers]);
         $tester = new CommandTester($consumer);
         $tester->execute([ExecCommand::QUEUE => '__MOCK__', ExecCommand::ACTION => '__MOCK__', '-H' => ['name=john']]);
