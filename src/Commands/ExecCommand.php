@@ -2,7 +2,6 @@
 
 namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Actions\Constant;
 use MVF\Servicer\MessageConsumer;
@@ -37,6 +36,22 @@ class ExecCommand extends Command
     {
         $this->queues = $queues;
         parent::__construct();
+    }
+
+    /**
+     * Run actions based on the event in the header.
+     *
+     * @param array $headers Attributes of the message headers
+     * @param array $body    Attributes of the message body
+     *
+     * @return callable
+     */
+    public function triggerAction(array $headers, array $body): callable
+    {
+        return function ($action) use ($headers, $body) {
+            $action = BuilderFacade::buildActionFor($action);
+            $action->beforeAction($headers, $body, MessageConsumer::consume($action, $headers, $body));
+        };
     }
 
     /**
@@ -117,21 +132,5 @@ class ExecCommand extends Command
         $headers['event'] = $input->getArgument(self::ACTION);
 
         return $headers;
-    }
-
-    /**
-     * Run actions based on the event in the header.
-     *
-     * @param array $headers Attributes of the message headers
-     * @param array $body    Attributes of the message body
-     *
-     * @return callable
-     */
-    public function triggerAction(array $headers, array $body): callable
-    {
-        return function ($action) use ($headers, $body) {
-            $action = BuilderFacade::buildActionFor($action);
-            $action->beforeAction($headers, $body, MessageConsumer::consume($action, $headers, $body));
-        };
     }
 }
