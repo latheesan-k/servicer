@@ -1,14 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: eleanorwintram
- * Date: 07/06/2019
- * Time: 17:41
- */
 
 namespace MVF\Servicer;
 
-use OpenTracing\GlobalTracer;
 use ReflectionClass;
 
 class MessageConsumer
@@ -26,16 +19,10 @@ class MessageConsumer
     {
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
-//
-//            if (isset($headers['carrier']) === true) {
-//                GlobalTracer::get()->extract('text_map', $headers['carrier']);
-//            }
-//
-//            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
+
             self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
-//            $span->finish();
         };
     }
 
