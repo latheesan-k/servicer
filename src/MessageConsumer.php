@@ -8,7 +8,6 @@
 
 namespace MVF\Servicer;
 
-
 use OpenTracing\GlobalTracer;
 use ReflectionClass;
 
@@ -26,17 +25,17 @@ class MessageConsumer
     public static function consume(ActionInterface $action, array $headers, array $body): callable
     {
         return function () use ($action, $headers, $body) {
-            $reflect = new ReflectionClass($action);
-
-            if (isset($headers['carrier']) === true) {
-                GlobalTracer::get()->extract('text_map', $headers['carrier']);
-            }
-
-            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
-            self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
+//            $reflect = new ReflectionClass($action);
+//
+//            if (isset($headers['carrier']) === true) {
+//                GlobalTracer::get()->extract('text_map', $headers['carrier']);
+//            }
+//
+//            $span = GlobalTracer::get()->startActiveSpan($reflect->getShortName())->getSpan();
+//            self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
-            self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
-            $span->finish();
+//            self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
+//            $span->finish();
         };
     }
 
