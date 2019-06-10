@@ -98,7 +98,7 @@ class SqsQueue implements QueueInterface
                 'MaxNumberOfMessages' => 1,
                 'MessageAttributeNames' => ['All'],
                 'QueueUrl' => $this->getSqsUrl(),
-                'WaitTimeSeconds' => 0,
+                'WaitTimeSeconds' => 20,
             ]
         );
 

@@ -68,8 +68,9 @@ class Config implements ConfigInterface
 $app = new Application();
 
 $exec = new ExecCommand(new Queues());
-$daemon = new DaemonCommand(
-    new SqsQueue(new Config())
+$daemon = new DaemonCommand([
+        'test' => new SqsQueue(new Config())
+    ]
 );
 
 $app->addCommands([$exec, $daemon]);

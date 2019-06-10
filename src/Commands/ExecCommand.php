@@ -2,9 +2,9 @@
 
 namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\ActionInterface;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Actions\Constant;
+use MVF\Servicer\MessageConsumer;
 use MVF\Servicer\Queues;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,6 +36,22 @@ class ExecCommand extends Command
     {
         $this->queues = $queues;
         parent::__construct();
+    }
+
+    /**
+     * Run actions based on the event in the header.
+     *
+     * @param array $headers Attributes of the message headers
+     * @param array $body    Attributes of the message body
+     *
+     * @return callable
+     */
+    public function triggerAction(array $headers, array $body): callable
+    {
+        return function ($action) use ($headers, $body) {
+            $action = BuilderFacade::buildActionFor($action);
+            $action->beforeAction($headers, $body, MessageConsumer::consume($action, $headers, $body));
+        };
     }
 
     /**
@@ -91,7 +107,7 @@ class ExecCommand extends Command
         $queueClass = $this->queues->getClass($queue);
 
         $actions = Constant::getActions($queueClass . '::' . $headers['event']);
-        each($actions, $this->triggerActions($headers, $body));
+        each($actions, $this->triggerAction($headers, $body));
     }
 
     /**
@@ -116,37 +132,5 @@ class ExecCommand extends Command
         $headers['event'] = $input->getArgument(self::ACTION);
 
         return $headers;
-    }
-
-    /**
-     * Run actions based on the event in the header.
-     *
-     * @param array $headers Attributes of the message headers
-     * @param array $body    Attributes of the message body
-     *
-     * @return callable
-     */
-    private function triggerActions(array $headers, array $body): callable
-    {
-        return function ($action) use ($headers, $body) {
-            $action = BuilderFacade::buildActionFor($action);
-            $action->beforeAction($headers, $body, $this->triggerAction($action, $headers, $body));
-        };
-    }
-
-    /**
-     * Calls the handle function on the action.
-     *
-     * @param ActionInterface $action  Action being triggered
-     * @param array           $headers Event headers
-     * @param array           $body    Event body
-     *
-     * @return \Closure
-     */
-    private function triggerAction(ActionInterface $action, array $headers, array $body)
-    {
-        return function () use ($action, $headers, $body) {
-            $action->handle($headers, $body);
-        };
     }
 }

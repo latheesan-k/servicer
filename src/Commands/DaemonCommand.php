@@ -2,24 +2,23 @@
 
 namespace MVF\Servicer\Commands;
 
-use MVF\Servicer\QueueInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Functional\each;
 
 class DaemonCommand extends Command
 {
+    const QUEUE = 'queue';
+
     private $queues;
-    private $delay = 100000;
 
     /**
      * DaemonCommand constructor.
      *
-     * @param QueueInterface ...$queues The list of queues to be polled
+     * @param array $queues The list of queues to be polled
      */
-    public function __construct(QueueInterface ...$queues)
+    public function __construct(array $queues)
     {
         $this->queues = $queues;
         parent::__construct();
@@ -33,11 +32,11 @@ class DaemonCommand extends Command
         $this->setName('daemon');
         $this->setDescription('Run blocking daemon that listens for events');
         $this->setHelp('Not implemented');
-        $this->addOption(
-            'once',
-            null,
-            InputOption::VALUE_NONE,
-            'Run only one iteration'
+
+        $this->addArgument(
+            self::QUEUE,
+            InputArgument::REQUIRED,
+            'The queue where the event handler is defined'
         );
     }
 
@@ -49,27 +48,12 @@ class DaemonCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        do {
-            each($this->queues, $this->invokeListen($output));
-            usleep($this->delay);
-        } while ($input->getOption('once') !== true);
-    }
+        $queue = $input->getArgument(self::QUEUE);
 
-    /**
-     * Listens to the queue and handles errors.
-     *
-     * @param OutputInterface $output Defines console outputs
-     *
-     * @return callable
-     */
-    private function invokeListen(OutputInterface $output): callable
-    {
-        return function (QueueInterface $queue) use ($output) {
-            try {
-                $queue->listen();
-            } catch (\Exception $exception) {
-                $output->writeln($exception->getMessage());
-            }
-        };
+        try {
+            $this->queues[$queue]->listen();
+        } catch (\Exception $exception) {
+            $output->writeln($exception->getMessage());
+        }
     }
 }
