@@ -5,11 +5,8 @@ namespace MVF\Servicer;
 use MVF\Servicer\Actions\ActionMock;
 use MVF\Servicer\Actions\BuilderFacade;
 use MVF\Servicer\Actions\Constant;
-use OpenTracing\GlobalTracer;
-use ReflectionClass;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use function Functional\each;
-use function GuzzleHttp\json_encode;
 
 class Events extends ConsoleOutput
 {
