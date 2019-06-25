@@ -5,7 +5,7 @@ namespace MVF\Servicer;
 use OpenTracing\GlobalTracer;
 use OpenTracing\Span;
 use ReflectionClass;
-use function GuzzleHttp\json_encode;
+use function GuzzleHttp\{json_encode, json_decode};
 
 class MessageConsumer
 {
@@ -58,16 +58,16 @@ class MessageConsumer
      * Extract span from carrier or create a new one.
      *
      * @param ReflectionClass $reflect The class properties of the action
-     * @param string[]|null   $carrier In the payload header
+     * @param string|null   $carrier In the payload header
      *
      * @return Span
      */
-    private static function getSpan(ReflectionClass $reflect, ?array $carrier): Span
+    private static function getSpan(ReflectionClass $reflect, ?string $carrier): Span
     {
         $tracer = GlobalTracer::get();
         $scope = $tracer->startActiveSpan($reflect->getShortName());
 
-        if (self::isValidCarrier($carrier) === true) {
+        if (self::isValidCarrier(json_decode($carrier, true)) === true) {
             $context = $tracer->extract('text_map', $carrier);
             $scope = $tracer->startActiveSpan(
                 $reflect->getShortName(),
