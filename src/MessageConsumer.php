@@ -2,7 +2,10 @@
 
 namespace MVF\Servicer;
 
+use OpenTracing\GlobalTracer;
+use OpenTracing\Span;
 use ReflectionClass;
+use function \GuzzleHttp\json_encode;
 
 class MessageConsumer
 {
@@ -20,9 +23,11 @@ class MessageConsumer
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
 
+            $span = self::getSpan($reflect, $headers['carrier']);
             self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
+            $span->finish();
         };
     }
 
@@ -46,5 +51,30 @@ class MessageConsumer
         ];
 
         echo json_encode($payload) . PHP_EOL;
+    }
+
+    private static function getSpan(ReflectionClass $reflect, ?array $carrier): Span
+    {
+        $tracer = GlobalTracer::get();
+        $scope = $tracer->startActiveSpan($reflect->getShortName());
+
+        if (self::isValidCarrier($carrier)) {
+            $context = $tracer->extract('text_map', $carrier);
+            $scope = $tracer->startActiveSpan(
+                $reflect->getShortName(),
+                ['child_of' => $context->unwrapped()]
+            );
+        }
+
+        return $scope->getSpan();
+    }
+
+    private static function isValidCarrier($carrier): bool
+    {
+        return isset(
+            $carrier['x-datadog-trace-id'],
+            $carrier['x-datadog-parent-id'],
+            $carrier['x-datadog-sampling-priority']
+        );
     }
 }
