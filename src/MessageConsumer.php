@@ -5,7 +5,7 @@ namespace MVF\Servicer;
 use OpenTracing\GlobalTracer;
 use OpenTracing\Span;
 use ReflectionClass;
-use function \GuzzleHttp\json_encode;
+use function GuzzleHttp\json_encode;
 
 class MessageConsumer
 {
@@ -23,7 +23,8 @@ class MessageConsumer
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
 
-            $span = self::getSpan($reflect, $headers['carrier']);
+            $carrier = ($headers['carrier'] ?? null);
+            $span = self::getSpan($reflect, $carrier);
             self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
@@ -53,12 +54,20 @@ class MessageConsumer
         echo json_encode($payload) . PHP_EOL;
     }
 
+    /**
+     * Extract span from carrier or create a new one.
+     *
+     * @param ReflectionClass $reflect The class properties of the action
+     * @param string[]|null   $carrier In the payload header
+     *
+     * @return Span
+     */
     private static function getSpan(ReflectionClass $reflect, ?array $carrier): Span
     {
         $tracer = GlobalTracer::get();
         $scope = $tracer->startActiveSpan($reflect->getShortName());
 
-        if (self::isValidCarrier($carrier)) {
+        if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
             $scope = $tracer->startActiveSpan(
                 $reflect->getShortName(),
@@ -69,7 +78,14 @@ class MessageConsumer
         return $scope->getSpan();
     }
 
-    private static function isValidCarrier($carrier): bool
+    /**
+     * Checks if a valid carrier is provided.
+     *
+     * @param string[]|null $carrier In the payload header
+     *
+     * @return bool
+     */
+    private static function isValidCarrier(?array $carrier): bool
     {
         return isset(
             $carrier['x-datadog-trace-id'],
