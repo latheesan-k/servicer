@@ -13,7 +13,7 @@ trait EventHeaders
     private $event;
     private $version;
     private $createdAt = 0;
-    private $carrier = null;
+    private $carrier;
 
     /**
      * Constructs array of object's attributes and values and transforms attributes to snake case.
@@ -28,7 +28,7 @@ trait EventHeaders
         unset($attributes['createdAt']);
 
         $carrier = ($attributes['carrier'] ?? null);
-        if ($this->isInvalidCarrier($carrier)) {
+        if ($this->isInvalidCarrier($carrier) === true) {
             unset($attributes['carrier']);
         } else {
             $attributes['carrier'] = json_encode($attributes['carrier']);
@@ -38,32 +38,6 @@ trait EventHeaders
         $values = map(array_values($attributes), $this->transformToPayload());
 
         return array_combine($keys, $values);
-    }
-
-    private function injectCarrier()
-    {
-        $tracer = GlobalTracer::get();
-        $span = $tracer->getActiveSpan();
-        if (isset($span)) {
-            $context = $span->getContext();
-            $tracer->inject($context, 'text_map', $this->carrier);
-        }
-    }
-
-    /**
-     * Checks if a valid carrier is provided.
-     *
-     * @param string[]|null $carrier In the payload header
-     *
-     * @return bool
-     */
-    private function isInvalidCarrier(?array $carrier): bool
-    {
-        return !isset(
-            $carrier['x-datadog-trace-id'],
-            $carrier['x-datadog-parent-id'],
-            $carrier['x-datadog-sampling-priority']
-        );
     }
 
     /**
@@ -94,6 +68,35 @@ trait EventHeaders
     public function getCreatedAt(): int
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Sets the carrier attribute of the class with trace ids.
+     */
+    private function injectCarrier()
+    {
+        $tracer = GlobalTracer::get();
+        $span = $tracer->getActiveSpan();
+        if (isset($span) === true) {
+            $context = $span->getContext();
+            $tracer->inject($context, 'text_map', $this->carrier);
+        }
+    }
+
+    /**
+     * Checks if a valid carrier is provided.
+     *
+     * @param string[]|null $carrier In the payload header
+     *
+     * @return bool
+     */
+    private function isInvalidCarrier(?array $carrier): bool
+    {
+        return !isset(
+            $carrier['x-datadog-trace-id'],
+            $carrier['x-datadog-parent-id'],
+            $carrier['x-datadog-sampling-priority']
+        );
     }
 
     /**

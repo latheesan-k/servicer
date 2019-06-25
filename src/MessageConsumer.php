@@ -5,7 +5,8 @@ namespace MVF\Servicer;
 use OpenTracing\GlobalTracer;
 use OpenTracing\Span;
 use ReflectionClass;
-use function GuzzleHttp\{json_encode, json_decode};
+use function GuzzleHttp\json_decode;
+use function GuzzleHttp\json_encode;
 
 class MessageConsumer
 {
@@ -58,7 +59,7 @@ class MessageConsumer
      * Extract span from carrier or create a new one.
      *
      * @param ReflectionClass $reflect The class properties of the action
-     * @param string|null   $carrier In the payload header
+     * @param string|null     $carrier In the payload header
      *
      * @return Span
      */
@@ -67,7 +68,7 @@ class MessageConsumer
         $tracer = GlobalTracer::get();
         $scope = $tracer->startActiveSpan($reflect->getShortName());
 
-        if (self::isValidCarrier(json_decode($carrier, true)) === true) {
+        if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
             $scope = $tracer->startActiveSpan(
                 $reflect->getShortName(),
@@ -81,16 +82,32 @@ class MessageConsumer
     /**
      * Checks if a valid carrier is provided.
      *
-     * @param string[]|null $carrier In the payload header
+     * @param string|null $carrier In the payload header
      *
      * @return bool
      */
-    private static function isValidCarrier(?array $carrier): bool
+    private static function isValidCarrier(?string $carrier): bool
     {
-        return isset(
-            $carrier['x-datadog-trace-id'],
-            $carrier['x-datadog-parent-id'],
-            $carrier['x-datadog-sampling-priority']
-        );
+        try {
+            $carrier = json_decode($carrier, true);
+
+            return isset(
+                $carrier['x-datadog-trace-id'],
+                $carrier['x-datadog-parent-id'],
+                $carrier['x-datadog-sampling-priority']
+            );
+        } catch (\Exception $exception) {
+            $message = [
+                'message' => "Unable to parse carrier '"
+                    . ($carrier ?? 'null')
+                    . "' exception thrown "
+                    . $exception->getMessage(),
+                'severity' => 'ERROR',
+            ];
+
+            echo json_encode($message) . PHP_EOL;
+
+            return false;
+        }
     }
 }
