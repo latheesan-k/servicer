@@ -70,7 +70,7 @@ class MessageConsumer
 
         if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
-            $scope = $tracer->startActiveSpan(
+            $scope = $tracer->startSpan(
                 $reflect->getShortName(),
                 ['child_of' => $context->unwrapped()]
             );
