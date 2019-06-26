@@ -23,6 +23,7 @@ class MessageConsumer
     {
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
+            self::log('INFO', $reflect->getShortName(), 'READ', $headers, $body);
 
             $carrier = ($headers['carrier'] ?? null);
             $span = self::getSpan($reflect, $carrier);
