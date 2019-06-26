@@ -56,6 +56,34 @@ class MessageConsumer
     }
 
     /**
+     * Converts carrier from json to array.
+     *
+     * @param string|null $json Carrier in the json format
+     *
+     * @return array
+     */
+    public static function decodeCarrier(?string $json): array
+    {
+        $carrier = [];
+
+        try {
+            $carrier = json_decode($json, true);
+        } catch (\Exception $exception) {
+            $message = [
+                'message' => "Unable to parse carrier '"
+                    . ($json ?? 'null')
+                    . "' exception thrown "
+                    . $exception->getMessage(),
+                'severity' => 'ERROR',
+            ];
+
+            echo json_encode($message) . PHP_EOL;
+        }
+
+        return $carrier;
+    }
+
+    /**
      * Extract span from carrier or create a new one.
      *
      * @param ReflectionClass $reflect The class properties of the action
@@ -68,6 +96,7 @@ class MessageConsumer
         $tracer = GlobalTracer::get();
         $scope = $tracer->startActiveSpan($reflect->getShortName());
 
+        $carrier = self::decodeCarrier($carrier);
         if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
             $scope = $tracer->startSpan(
@@ -82,32 +111,16 @@ class MessageConsumer
     /**
      * Checks if a valid carrier is provided.
      *
-     * @param string|null $carrier In the payload header
+     * @param array|null $carrier In the payload header
      *
      * @return bool
      */
-    private static function isValidCarrier(?string $carrier): bool
+    private static function isValidCarrier(array $carrier): bool
     {
-        try {
-            $carrier = json_decode($carrier, true);
-
-            return isset(
-                $carrier['x-datadog-trace-id'],
-                $carrier['x-datadog-parent-id'],
-                $carrier['x-datadog-sampling-priority']
-            );
-        } catch (\Exception $exception) {
-            $message = [
-                'message' => "Unable to parse carrier '"
-                    . ($carrier ?? 'null')
-                    . "' exception thrown "
-                    . $exception->getMessage(),
-                'severity' => 'ERROR',
-            ];
-
-            echo json_encode($message) . PHP_EOL;
-
-            return false;
-        }
+        return isset(
+            $carrier['x-datadog-trace-id'],
+            $carrier['x-datadog-parent-id'],
+            $carrier['x-datadog-sampling-priority']
+        );
     }
 }
