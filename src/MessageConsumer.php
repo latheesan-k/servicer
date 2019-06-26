@@ -23,7 +23,6 @@ class MessageConsumer
     {
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
-            self::log('INFO', $reflect->getShortName(), 'READ', $headers, $body);
 
             $carrier = ($headers['carrier'] ?? null);
             $span = self::getSpan($reflect, $carrier);
@@ -100,7 +99,7 @@ class MessageConsumer
         $carrier = self::decodeCarrier($carrier);
         if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
-            $scope = $tracer->startSpan(
+            return $tracer->startSpan(
                 $reflect->getShortName(),
                 ['child_of' => $context->unwrapped()]
             );
