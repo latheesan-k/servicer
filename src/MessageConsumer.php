@@ -44,12 +44,17 @@ class MessageConsumer
      */
     public static function log(string $severity, string $action, string $state, array $headers, array $body): void
     {
+        $carrier = ($headers['carrier'] ?? null);
+        $carrier = self::decodeCarrier($carrier);
+
         $payload = [
             'severity' => $severity,
             'event' => ($headers['event'] ?? $action),
             'action' => $action,
             'state' => $state,
             'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body]),
+            'trace' => $carrier['x-datadog-trace-id'] ?? null,
+            'span' => $carrier['x-datadog-parent-id'] ?? null,
         ];
 
         echo json_encode($payload) . PHP_EOL;
