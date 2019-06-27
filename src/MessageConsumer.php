@@ -104,10 +104,14 @@ class MessageConsumer
         $carrier = self::decodeCarrier($carrier);
         if (self::isValidCarrier($carrier) === true) {
             $context = $tracer->extract('text_map', $carrier);
-            return $tracer->startSpan(
+            $span = $tracer->startSpan(
                 $reflect->getShortName(),
                 ['child_of' => $context->unwrapped()]
             );
+
+            $tracer->getScopeManager()->activate($span);
+
+            return $span;
         }
 
         return $scope->getSpan();
