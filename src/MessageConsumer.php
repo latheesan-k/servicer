@@ -99,7 +99,7 @@ class MessageConsumer
     private static function getSpan(ReflectionClass $reflect, ?string $carrier): Span
     {
         $tracer = GlobalTracer::get();
-        $scope = $tracer->startActiveSpan($reflect->getShortName());
+        $span = $tracer->startSpan($reflect->getShortName());
 
         $carrier = self::decodeCarrier($carrier);
         if (self::isValidCarrier($carrier) === true) {
@@ -108,13 +108,11 @@ class MessageConsumer
                 $reflect->getShortName(),
                 ['child_of' => $context->unwrapped()]
             );
-
-            $tracer->getScopeManager()->activate($span);
-
-            return $span;
         }
 
-        return $scope->getSpan();
+        $tracer->getScopeManager()->activate($span);
+
+        return $span;
     }
 
     /**
