@@ -79,7 +79,7 @@ class MessageConsumer
                     . ($json ?? 'null')
                     . "' exception thrown "
                     . $exception->getMessage(),
-                'severity' => 'ERROR',
+                'severity' => 'WARNING',
             ];
 
             echo json_encode($message) . PHP_EOL;
