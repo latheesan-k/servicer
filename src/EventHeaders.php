@@ -31,7 +31,7 @@ trait EventHeaders
         if ($this->isInvalidCarrier($carrier) === true) {
             unset($attributes['carrier']);
         } else {
-            $attributes['carrier'] = json_encode($attributes['carrier']);
+            $attributes['carrier'] = base64_encode(json_encode($attributes['carrier']));
         }
 
         $keys = map(array_keys($attributes), $this->transformToSnakeCase());

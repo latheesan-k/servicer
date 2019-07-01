@@ -72,7 +72,7 @@ class MessageConsumer
         $carrier = [];
 
         try {
-            $carrier = json_decode($json, true);
+            $carrier = json_decode(base64_decode($json), true);
         } catch (\Exception $exception) {
             $message = [
                 'message' => "Unable to parse carrier '"
