@@ -2,11 +2,9 @@
 
 namespace MVF\Servicer;
 
-use OpenTracing\GlobalTracer;
-use OpenTracing\Span;
+use MVF\Servicer\Services\LogCapsule;
+use MVF\Servicer\Services\TracerCapsule;
 use ReflectionClass;
-use function GuzzleHttp\json_decode;
-use function GuzzleHttp\json_encode;
 
 class MessageConsumer
 {
@@ -23,9 +21,8 @@ class MessageConsumer
     {
         return function () use ($action, $headers, $body) {
             $reflect = new ReflectionClass($action);
-
             $carrier = ($headers['carrier'] ?? null);
-            $span = self::getSpan($reflect, $carrier);
+            $span = TracerCapsule::extractCarrier($reflect->getShortName(), $carrier);
             self::log('INFO', $reflect->getShortName(), 'STARTED', $headers, $body);
             $action->handle($headers, $body);
             self::log('INFO', $reflect->getShortName(), 'COMPLETED', $headers, $body);
@@ -44,90 +41,8 @@ class MessageConsumer
      */
     public static function log(string $severity, string $action, string $state, array $headers, array $body): void
     {
-        $carrier = ($headers['carrier'] ?? null);
-        $carrier = self::decodeCarrier($carrier);
-
-        $payload = [
-            'severity' => $severity,
-            'event' => ($headers['event'] ?? $action),
-            'action' => $action,
-            'state' => $state,
-            'message' => 'Payload: ' . json_encode(['headers' => $headers, 'body' => $body]),
-            'trace' => $carrier['x-datadog-trace-id'] ?? null,
-            'span' => $carrier['x-datadog-parent-id'] ?? null,
-        ];
-
-        echo json_encode($payload) . PHP_EOL;
-    }
-
-    /**
-     * Converts carrier from json to array.
-     *
-     * @param string|null $json Carrier in the json format
-     *
-     * @return array
-     */
-    public static function decodeCarrier(?string $json): array
-    {
-        $carrier = [];
-
-        try {
-            $carrier = json_decode(base64_decode($json), true);
-        } catch (\Exception $exception) {
-            $message = [
-                'message' => "Unable to parse carrier '"
-                    . ($json ?? 'null')
-                    . "' exception thrown "
-                    . $exception->getMessage(),
-                'severity' => 'WARNING',
-            ];
-
-            echo json_encode($message) . PHP_EOL;
-        }
-
-        return $carrier;
-    }
-
-    /**
-     * Extract span from carrier or create a new one.
-     *
-     * @param ReflectionClass $reflect The class properties of the action
-     * @param string|null     $carrier In the payload header
-     *
-     * @return Span
-     */
-    private static function getSpan(ReflectionClass $reflect, ?string $carrier): Span
-    {
-        $tracer = GlobalTracer::get();
-        $span = $tracer->startSpan($reflect->getShortName());
-
-        $carrier = self::decodeCarrier($carrier);
-        if (self::isValidCarrier($carrier) === true) {
-            $context = $tracer->extract('text_map', $carrier);
-            $span = $tracer->startSpan(
-                $reflect->getShortName(),
-                ['child_of' => $context->unwrapped()]
-            );
-        }
-
-        $tracer->getScopeManager()->activate($span);
-
-        return $span;
-    }
-
-    /**
-     * Checks if a valid carrier is provided.
-     *
-     * @param array|null $carrier In the payload header
-     *
-     * @return bool
-     */
-    private static function isValidCarrier(array $carrier): bool
-    {
-        return isset(
-            $carrier['x-datadog-trace-id'],
-            $carrier['x-datadog-parent-id'],
-            $carrier['x-datadog-sampling-priority']
-        );
+        $message = ['Payload' => ['headers' => $headers, 'body' => $body]];
+        $logger = new LogCapsule(['action' => $action, 'state' => $state]);
+        $logger->$severity($message);
     }
 }

@@ -9,6 +9,7 @@ use MVF\Servicer\Commands\ExecCommand;
 use MVF\Servicer\ConfigInterface;
 use MVF\Servicer\Events;
 use MVF\Servicer\Queues\SqsQueue;
+use MVF\Servicer\Services\LogCapsule;
 use MVF\Servicer\SettingsInterface;
 use Symfony\Component\Console\Application;
 
@@ -66,9 +67,11 @@ class Config implements ConfigInterface
 }
 
 $app = new Application();
+LogCapsule::setup($app);
 
 $exec = new ExecCommand(new Queues());
-$daemon = new DaemonCommand([
+$daemon = new DaemonCommand(
+    [
         'test' => new SqsQueue(new Config())
     ]
 );
