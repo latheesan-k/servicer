@@ -11,3 +11,4 @@ modules:
         - Asserts
         - \Helper\Functional
         - \Helper\AspectMock
+        - \Helper\Connection
