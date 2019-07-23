@@ -37,7 +37,7 @@ class LogCapsule
      */
     public function __invoke(array $config)
     {
-        return self::$instance;
+        self::setup();
     }
 
     /**
@@ -45,7 +45,7 @@ class LogCapsule
      *
      * @param Application $application The application in which the logger is being used
      */
-    public static function setup(Application $application)
+    public static function setup(Application $application = null)
     {
         if (empty(self::$instance) === true) {
             $logger = new Logger('custom');
@@ -59,7 +59,9 @@ class LogCapsule
 
             self::$instance = $logger;
 
-            $application->setCatchExceptions(false);
+            if (isset($application) === true) {
+                $application->setCatchExceptions(false);
+            }
 
             ErrorHandler::register($logger);
         }

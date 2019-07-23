@@ -14,5 +14,3 @@ RUN apk update \
 RUN wget https://github.com/DataDog/dd-trace-php/releases/download/0.28.1/datadog-php-tracer_0.28.1_noarch.apk \
     && apk add --no-cache --allow-untrusted datadog-php-tracer_0.28.1_noarch.apk \
     && rm datadog-php-tracer_0.28.1_noarch.apk
-
-COPY site.conf /etc/nginx/conf.d/default.conf
