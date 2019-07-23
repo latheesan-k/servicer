@@ -1,4 +1,4 @@
-FROM nginx:1.15.1-alpine
+FROM php:7.1-cli-alpine
 
 WORKDIR /code
 
@@ -11,4 +11,6 @@ RUN apk update \
     && apk add php7-phpdbg \
     && rm -rf /var/cache/apk/* /var/tmp/*/tmp/*
 
-COPY site.conf /etc/nginx/conf.d/default.conf
+RUN wget https://github.com/DataDog/dd-trace-php/releases/download/0.28.1/datadog-php-tracer_0.28.1_noarch.apk \
+    && apk add --no-cache --allow-untrusted datadog-php-tracer_0.28.1_noarch.apk \
+    && rm datadog-php-tracer_0.28.1_noarch.apk
