@@ -5,6 +5,7 @@ namespace MVF\Servicer;
 use MVF\Servicer\Services\LogCapsule;
 use MVF\Servicer\Services\TracerCapsule;
 use ReflectionClass;
+use function Functional\invoke;
 
 class MessageConsumer
 {
@@ -43,6 +44,6 @@ class MessageConsumer
     {
         $message = ['Payload' => ['headers' => $headers, 'body' => $body]];
         $logger = new LogCapsule(['action' => $action, 'state' => $state]);
-        $logger->$severity($message);
+        invoke([$logger], $severity, [$message]);
     }
 }

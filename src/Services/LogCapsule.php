@@ -8,6 +8,7 @@ use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Symfony\Component\Console\Application;
+use function Functional\invoke;
 
 class LogCapsule
 {
@@ -112,7 +113,7 @@ class LogCapsule
     {
         $exception = null;
         $combined = array_merge($message, $this->getTraces());
-        self::$instance->$severity(\GuzzleHttp\json_encode($combined), $this->extras);
+        invoke([self::$instance], $severity, [\GuzzleHttp\json_encode($combined), $this->extras]);
 
         return $exception;
     }
