@@ -37,15 +37,15 @@ class LogCapsule
      */
     public function __invoke(array $config)
     {
-        return self::setup();
+        self::setup();
+
+        return self::$instance;
     }
 
     /**
      * Instantiates a new logger.
      *
      * @param Application $application The application in which the logger is being used
-     *
-     * @return Logger
      */
     public static function setup(Application $application = null)
     {
@@ -66,8 +66,6 @@ class LogCapsule
             }
 
             ErrorHandler::register($logger);
-
-            return $logger;
         }
     }
 
