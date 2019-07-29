@@ -38,6 +38,8 @@ class LogCapsule
     public function __invoke(array $config)
     {
         self::setup();
+
+        return self::$instance;
     }
 
     /**
