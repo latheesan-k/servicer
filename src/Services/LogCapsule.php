@@ -2,7 +2,6 @@
 
 namespace MVF\Servicer\Services;
 
-use Carbon\Carbon;
 use Monolog\ErrorHandler;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\ErrorLogHandler;
@@ -148,11 +147,11 @@ class LogCapsule
     /**
      * Converts datetime object to string.
      *
-     * @param Carbon|\DateTime $datetime The datetime object
+     * @param \DateTime $datetime The datetime object
      *
      * @return string
      */
-    private static function dateToString($datetime): string
+    private static function dateToString(\DateTime $datetime): string
     {
         $dateTimeUTC = new \DateTimeZone('UTC');
 

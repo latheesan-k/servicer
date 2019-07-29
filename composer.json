@@ -15,7 +15,6 @@
         "aws/aws-sdk-php": "^3.82",
         "lstrojny/functional-php": "^1.9",
         "opentracing/opentracing": "1.0.0-beta6",
-        "nesbot/carbon": "^2.21",
         "datadog/dd-trace": "^0.29.0",
         "symfony/monolog-bundle": "^3.4"
     },
