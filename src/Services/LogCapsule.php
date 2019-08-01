@@ -71,11 +71,11 @@ class LogCapsule
     /**
      * Logs an info message to standard out.
      *
-     * @param mixed $message Message to be logged
+     * @param string $message Message to be logged
      *
      * @return \Exception|null
      */
-    public function info($message)
+    public function info(string $message)
     {
         return $this->write(static::INFO, $message);
     }
@@ -83,11 +83,11 @@ class LogCapsule
     /**
      * Logs an warning message to standard out.
      *
-     * @param mixed $message Message to be logged
+     * @param string $message Message to be logged
      *
      * @return \Exception|null
      */
-    public function warning($message)
+    public function warning(string $message)
     {
         return $this->write(static::WARNING, $message);
     }
@@ -95,28 +95,46 @@ class LogCapsule
     /**
      * Logs an error message to standard out.
      *
-     * @param mixed $message Message to be logged
+     * @param string $message Message to be logged
      *
      * @return \Exception|null
      */
-    public function error($message)
+    public function error(string $message)
     {
         return $this->write(static::ERROR, $message);
     }
 
     /**
+     * Gets the trace and span id.
+     *
+     * @return array
+     */
+    public static function getTraces(): array
+    {
+        $json = TracerCapsule::injectCarrier();
+        $carrier = TracerCapsule::decodeCarrier($json);
+        if (TracerCapsule::isValidCarrier($carrier) === true) {
+            return [
+                'trace' => $carrier['x-datadog-trace-id'],
+                'span' => $carrier['x-datadog-parent-id'],
+            ];
+        }
+
+        return [];
+    }
+
+    /**
      * Logs the message for the provided severity.
      *
-     * @param string       $severity The severity of the message
-     * @param array|string $message  The message
+     * @param string $severity The severity of the message
+     * @param string $message  The message
      *
      * @return \Exception|null
      */
-    private function write(string $severity, $message): ?\Exception
+    private function write(string $severity, string $message): ?\Exception
     {
         $exception = null;
-        $combined = array_merge($message, $this->getTraces());
-        invoke([self::$instance], $severity, [\GuzzleHttp\json_encode($combined), $this->extras]);
+        invoke([self::$instance], $severity, [$message, $this->extras]);
 
         return $exception;
     }
@@ -156,24 +174,5 @@ class LogCapsule
         $dateTimeUTC = new \DateTimeZone('UTC');
 
         return $datetime->getTimestamp() . $datetime->setTimezone($dateTimeUTC)->format('v');
-    }
-
-    /**
-     * Gets the trace and span id.
-     *
-     * @return array
-     */
-    private static function getTraces(): array
-    {
-        $json = TracerCapsule::injectCarrier();
-        $carrier = TracerCapsule::decodeCarrier($json);
-        if (TracerCapsule::isValidCarrier($carrier) === true) {
-            return [
-                'trace' => $carrier['x-datadog-trace-id'],
-                'span' => $carrier['x-datadog-parent-id'],
-            ];
-        }
-
-        return [];
     }
 }
