@@ -109,7 +109,7 @@ class LogCapsule
      *
      * @return array
      */
-    public static function getTraces(): array
+    private static function getTraces(): array
     {
         $json = TracerCapsule::injectCarrier();
         $carrier = TracerCapsule::decodeCarrier($json);
