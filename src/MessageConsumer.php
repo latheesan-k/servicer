@@ -42,7 +42,7 @@ class MessageConsumer
      */
     public static function log(string $severity, string $action, string $state, array $headers, array $body): void
     {
-        $message = ['Payload' => ['headers' => $headers, 'body' => $body]];
+        $message = \GuzzleHttp\json_encode(['Payload' => ['headers' => $headers, 'body' => $body]]);
         $logger = new LogCapsule(['action' => $action, 'state' => $state]);
         invoke([$logger], $severity, [$message]);
     }
